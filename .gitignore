@@ -1,0 +1,8 @@
+# Betriebssystem und Editoren
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+# Sicherungen des Fortschritts gehören nicht ins Repo
+prog3-training-sicherung-*.json
