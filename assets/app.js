@@ -709,7 +709,7 @@
   function viewEinstellungen() {
     navAktiv('einstellungen');
     const e = einstellungen.lesen();
-    const theme = h('select', {}, [['auto', 'wie das System'], ['light', 'hell'], ['dark', 'dunkel']].map(([v, t]) => h('option', { value: v, text: t, selected: e.theme === v })));
+    const theme = h('select', {}, [['light', 'hell (weiß)'], ['dark', 'dunkel'], ['auto', 'wie das System']].map(([v, t]) => h('option', { value: v, text: t, selected: e.theme === v })));
     theme.addEventListener('change', () => { einstellungen.setzen({ theme: theme.value }); themeAnwenden(); });
     const grenze = h('input', { type: 'number', min: '30', max: '80', step: '5', value: String(e.bestehen) });
     const tabelle = h('div');

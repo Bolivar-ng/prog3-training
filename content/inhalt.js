@@ -8,6 +8,6 @@ P3.kapitel([
     titel: 'Grundlagen und Wiederholung',
     beschreibung: 'Qualitätsregeln, Namen und JavaDoc, Referenzen, equals/hashCode, Exceptions, switch, Bankprojekt und Übung 0.',
     zusammenfassung: true,
-    serien: ['s01', 's02', 's03', 's04']
+    serien: ['s03', 's04']
   }
 ]);

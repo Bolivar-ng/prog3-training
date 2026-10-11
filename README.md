@@ -32,6 +32,9 @@ Motor und Inhalte sind getrennt: Neue Kapitel und Serien brauchen keine Änderun
 
 ## Neue Serie hinzufügen
 
+Umfang: **10–20 Fragen pro Serie**, nur die wichtigsten.
+
+
 1. Datei `content/k00/s05.js` anlegen (Format unten).
 2. In `content/inhalt.js` beim Kapitel `'s05'` an `serien` anhängen.
 3. `node tools/pruefen.js` ausführen, muss „Alles in Ordnung.“ melden.

@@ -110,7 +110,7 @@ window.P3 = (function () {
   };
 
   const einstellungen = {
-    standard: { theme: 'auto', bestehen: 50 },
+    standard: { theme: 'light', bestehen: 50 },
     lesen() { return Object.assign({}, einstellungen.standard, speicher.lesen('einstellungen', {})); },
     setzen(teil) { speicher.schreiben('einstellungen', Object.assign(einstellungen.lesen(), teil)); }
   };

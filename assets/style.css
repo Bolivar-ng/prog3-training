@@ -1,8 +1,9 @@
 /* Prog3-Training – Gestaltung
    Farben als Tokens, hell/dunkel automatisch, per Einstellung erzwingbar. */
 :root {
-  --paper: #F2F5F5;
+  --paper: #FFFFFF;
   --surface: #FFFFFF;
+  --soft: #F3F7F7;
   --ink: #16252C;
   --muted: #5B6E77;
   --rule: #D3DCDF;
@@ -25,6 +26,7 @@
   :root:not([data-theme="light"]) {
     --paper: #0E191D;
     --surface: #152429;
+    --soft: #152429;
     --ink: #E2ECEE;
     --muted: #93A8AF;
     --rule: #283B41;
@@ -47,6 +49,7 @@
 :root[data-theme="dark"] {
   --paper: #0E191D;
   --surface: #152429;
+  --soft: #152429;
   --ink: #E2ECEE;
   --muted: #93A8AF;
   --rule: #283B41;
@@ -330,7 +333,7 @@ p code, li code, td code, .opt-tx code, .q-prompt code, .m-left code, .ord-tx co
 .fb {
   margin-top: 14px;
   padding: 12px 16px;
-  background: var(--surface);
+  background: var(--soft);
   border-left: 4px solid var(--teal);
   border-radius: 0 8px 8px 0;
 }
@@ -484,7 +487,7 @@ legend { font-weight: 700; padding: 0 4px; }
 .prose table { border-collapse: collapse; margin: 10px 0 16px; font-size: .92rem; display: block; overflow-x: auto; }
 .prose th, .prose td { border: 1px solid var(--rule); padding: 6px 10px; text-align: left; vertical-align: top; }
 .prose th { background: var(--teal-soft); }
-.box { border-left: 4px solid var(--teal); background: var(--surface); padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; }
+.box { border-left: 4px solid var(--teal); background: var(--soft); padding: 10px 16px; border-radius: 0 8px 8px 0; margin: 14px 0; }
 .box.merke { border-left-color: var(--teal); }
 .box.achtung { border-left-color: var(--bad); }
 .box.pruefung { border-left-color: var(--warn); }
