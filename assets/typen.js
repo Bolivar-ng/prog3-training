@@ -40,9 +40,10 @@
             draw();
             aenderung();
           });
-          list.append(b);
           return b;
         });
+        // Antworten in zufälliger Reihenfolge anzeigen; gespeichert wird immer der Original-Index
+        P3.mischen(btns.map((_, i) => i)).forEach(i => list.append(btns[i]));
         const draw = () => btns.forEach((b, i) => b.setAttribute('aria-pressed', String(sel.has(i))));
         el.append(list);
         if (multi) el.append(h('p', { class: 'hint', text: 'Mehrere Antworten können richtig sein. Bewertet wird nur die exakt richtige Auswahl.' }));
@@ -118,7 +119,7 @@
             const idx = Number(m[1]);
             const s = h('select', { class: 'blank', 'aria-label': 'Lücke ' + (idx + 1) },
               h('option', { value: '', text: '▾ ' + (idx + 1) }),
-              q.blanks[idx].options.map((o, j) => h('option', { value: String(j), text: o })));
+              P3.mischen(q.blanks[idx].options.map((o, j) => j)).map(j => h('option', { value: String(j), text: q.blanks[idx].options[j] })));
             s.addEventListener('change', aenderung);
             selects[idx] = s;
             tx.append(s);

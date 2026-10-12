@@ -9,5 +9,13 @@ P3.kapitel([
     beschreibung: 'Qualitätsregeln, Namen und JavaDoc, Referenzen, equals/hashCode, Exceptions, switch, Bankprojekt und Übung 0.',
     zusammenfassung: true,
     serien: ['s03', 's04']
+  },
+  {
+    id: 'K01',
+    ordner: 'k01',
+    titel: 'Maven',
+    beschreibung: 'Build-Management: GAV, pom.xml, Lebenszyklus, Dependencies und Scopes, Plugins und Goals, typische Fehler.',
+    zusammenfassung: true,
+    serien: ['s01']
   }
 ]);
