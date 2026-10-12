@@ -13,16 +13,21 @@
       const s = document.createElement('script');
       s.src = src;
       s.onload = () => resolve(true);
-      s.onerror = () => { inhalt.fehler.push('Datei nicht gefunden: ' + src); resolve(false); };
+      s.onerror = () => { inhalt.fehler.push('Datei nicht gefunden: ' + src.split('?')[0]); resolve(false); };
       document.head.append(s);
     });
   }
 
+  // Inhalte immer frisch laden (Zeitstempel je Minute), damit nach einem Update
+  // keine alten oder als „nicht gefunden“ gemerkten Dateien aus dem Browser-Cache kommen.
+  const frisch = src => src + '?t=' + Math.floor(Date.now() / 60000);
+
   async function laden() {
+    await skript(frisch('content/inhalt.js'));
     for (const k of inhalt.kapitel) {
       const ordner = 'content/' + (k.ordner || k.id.toLowerCase()) + '/';
-      if (k.zusammenfassung) await skript(ordner + 'zusammenfassung.js');
-      for (const s of k.serien) await skript(ordner + s + '.js');
+      if (k.zusammenfassung) await skript(frisch(ordner + 'zusammenfassung.js'));
+      for (const s of k.serien) await skript(frisch(ordner + s + '.js'));
     }
   }
 
@@ -247,6 +252,7 @@
     if (!k) return viewNichtGefunden();
     const vl = verlauf.liste();
     const kinder = [
+      inhalt.fehler.length ? h('div', { class: 'banner' }, h('span', {}, h('strong', { text: 'Ladefehler: ' }), inhalt.fehler.join(' · '), ' – Seite mit Strg + F5 neu laden.')) : null,
       h('p', { class: 'crumbs' }, h('a', { href: '#/', text: 'Start' }), ' / ', k.id),
       h('h1', { text: k.id + ' · ' + k.titel }),
       h('p', { class: 'lead', text: k.beschreibung || '' }),
