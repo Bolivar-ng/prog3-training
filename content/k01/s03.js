@@ -31,14 +31,14 @@ P3.serie({
 </plugin>`,
       blanks: [
         { options: ['prepare-agent', 'report', 'check', 'instrument'], answer: 0,
-          why: '`prepare-agent` instrumentiert den Bytecode und schreibt die JVM-Argumente in `${argLine}`.' },
+          why: '`prepare-agent` instrumentiert den Bytecode und schreibt die JVM-Argumente in `\${argLine}`.' },
         { options: ['test-compile', 'test', 'compile', 'package'], answer: 0,
           why: 'Muss vor dem Start der Tests gebunden sein — `test-compile` kommt nach `compile`, aber vor `test`.' }
       ],
       explain: '`prepare-agent` muss vor `test` laufen (Phase `test-compile`), damit JaCoCo die JVM mit `-javaagent:...` starten kann, bevor Surefire die Tests ausführt.' },
 
     { id: 'K01-S03-F02', sec: 'jacoco', type: 'mc', t: 'Was macht prepare-agent?',
-      prompt: 'Was genau schreibt `prepare-agent` in die Maven-Property `${argLine}`?',
+      prompt: 'Was genau schreibt `prepare-agent` in die Maven-Property `\${argLine}`?',
       options: [
         'Den Pfad zur `jacoco.exec`-Ausgabedatei als `-Xmx`-Flag.',
         'JVM-Startargumente für den Surefire-Agenten, damit JaCoCo den Bytecode zur Laufzeit messen kann.',
@@ -66,16 +66,16 @@ P3.serie({
   <artifactId>maven-surefire-plugin</artifactId>
   <version>3.5.2</version>
   <configuration>
-    <argLine>${argLine}</argLine>
+    <argLine>\${argLine}</argLine>
   </configuration>
 </plugin>`,
       findings: [
-        { text: '`${argLine}` sollte `@{argLine}` sein.', correct: true,
-          why: '`${argLine}` ist eine Maven-Property und wird beim POM-Parsen aufgelöst (vor JaCoCo). `@{argLine}` wird erst zur Laufzeit der Phase aufgelöst — wenn JaCoCo den Wert schon gesetzt hat.' },
+        { text: '`\${argLine}` sollte `@{argLine}` sein.', correct: true,
+          why: '`\${argLine}` ist eine Maven-Property und wird beim POM-Parsen aufgelöst (vor JaCoCo). `@{argLine}` wird erst zur Laufzeit der Phase aufgelöst — wenn JaCoCo den Wert schon gesetzt hat.' },
         { text: 'Die `<version>` von Surefire fehlt — das führt zu einem Build-Fehler.', correct: false,
           why: 'Die Version ist angegeben (3.5.2). Fehlen würde sie auch nicht zum Fehler führen, Maven würde die Version aus der Super-POM nehmen.' },
         { text: 'Ohne `@{argLine}` misst JaCoCo keine Coverage, weil der Agent nie gestartet wird.', correct: true,
-          why: 'Mit `${argLine}` bekommt Surefire einen leeren String oder einen alten Wert. Der JaCoCo-Agent (`-javaagent:...`) wird nie an die Test-JVM übergeben.' },
+          why: 'Mit `\${argLine}` bekommt Surefire einen leeren String oder einen alten Wert. Der JaCoCo-Agent (`-javaagent:...`) wird nie an die Test-JVM übergeben.' },
         { text: 'Die `<groupId>` fehlt — der Build scheitert.', correct: false,
           why: '`maven-surefire-plugin` gehört zu `org.apache.maven.plugins` — die Standard-GroupId aus Mavens Super-POM. Sie kann weggelassen werden.' }
       ],
@@ -320,9 +320,13 @@ public class TestKalender extends Kalender {
       explain: 'Beide schließen die Dependency aus dem JAR aus, aber aus verschiedenen Gründen: `test` — nur für Testcode, nicht für Produktionscode. `provided` — für Produktionscode und Tests verfügbar, aber die Laufzeitumgebung liefert sie (JDK, Appserver). Lombok generiert Code beim Kompilieren; zur Laufzeit wird die JAR nicht mehr gebraucht.' },
 
     { id: 'K01-S03-F19', sec: 'phasen', type: 'explain', t: 'Warum @{argLine} statt ${argLine}?',
-      prompt: 'In der pom.xml steht `<argLine>@{argLine}</argLine>` — nicht `${argLine}`. Erkläre den Unterschied und warum die `@{}`-Variante hier nötig ist.',
-      model: `Maven löst ${}-Ausdrücke beim Parsen der pom.xml auf — bevor irgendeine Phase läuft. Zu diesem Zeitpunkt hat JaCoCo prepare-agent noch gar nicht die Property argLine gesetzt. Ergebnis: Surefire bekommt einen leeren String, kein Agent wird gestartet, JaCoCo misst nichts.
-@{}-Ausdrücke (late binding) werden erst zur Ausführungszeit der jeweiligen Phase aufgelöst. Wenn Surefire in der test-Phase startet, hat prepare-agent in test-compile bereits den JaCoCo-Agent-Aufruf in argLine hinterlegt. So bekommt die Test-JVM den richtigen -javaagent:...-Flag.` },
+      prompt: 'In der pom.xml steht <argLine>@{argLine}</argLine> statt ${argLine}. Erklaere den Unterschied und warum die @{}-Variante hier noetig ist.',
+      model: 'Maven loest ${}-Ausdruecke beim Parsen der pom.xml auf — noch bevor irgendeine Phase laeuft. ' +
+             'Zu diesem Zeitpunkt hat JaCoCo prepare-agent die Property argLine noch nicht gesetzt. ' +
+             'Ergebnis: Surefire bekommt einen leeren String, der Agent startet nicht, JaCoCo misst nichts.\n' +
+             '@{}-Ausdruecke (late binding) werden erst zur Ausfuehrungszeit der Phase aufgeloest. ' +
+             'Wenn Surefire in der test-Phase startet, hat prepare-agent in test-compile den JaCoCo-Agent-Aufruf ' +
+             'bereits in argLine hinterlegt. So bekommt die Test-JVM den richtigen -javaagent:...-Flag.' },
 
     { id: 'K01-S03-F20', sec: 'phasen', type: 'mc', t: 'Welcher Befehl erzeugt das Abgabe-JAR?',
       prompt: 'Welcher Maven-Befehl erzeugt `bankprojekt-0.0.1-SNAPSHOT-abgabe.jar` mit vollständigem JaCoCo-Report und taglist?',
