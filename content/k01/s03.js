@@ -106,16 +106,18 @@ P3.serie({
       answer: 1,
       explain: '`TestKalender` ist Test-Infrastruktur → gehört nach `src/test/`. Sie muss im selben Package (`bankprojekt.tests`) wie `SparbuchTest` liegen, damit package-private Sichtbarkeit funktioniert. `Kalender` liegt in `bankprojekt.nuetzliches` — einem anderen Package.' },
 
-    { id: 'K01-S03-F09', sec: 'teststub', type: 'coderev', t: 'Bug in setDatum finden',
-      prompt: 'Finde den Bug im folgenden `setDatum`:\n```java\npublic void setDatum(LocalDate neuesDatum) {\n    this.datum = datum;\n}\n```',
-      options: [
-        'Die Methode ist `public` — sie sollte `private` sein.',
-        '`this.datum = datum` kopiert das Feld in sich selbst. Der Parameter `neuesDatum` wird ignoriert. Korrekt: `this.datum = neuesDatum`.',
-        'Der Parameter müsste `LocalDate.now()` sein.',
-        'Es fehlt ein `return`-Statement.'
+    { id: 'K01-S03-F09', sec: 'teststub', type: 'review', t: 'Bug in setDatum finden',
+      prompt: 'Welche Befunde treffen auf diese Implementierung zu?',
+      code: `public void setDatum(LocalDate neuesDatum) {
+    this.datum = datum;
+}`,
+      findings: [
+        { text: '`this.datum = datum` ist ein Selbstzuweisungs-Bug — der Parameter `neuesDatum` wird ignoriert.', correct: true, why: '`datum` ohne `this.` referenziert das Feld selbst. Korrekt: `this.datum = neuesDatum;`.' },
+        { text: 'Die Methode sollte `private` statt `public` sein.', correct: false, why: '`setDatum` muss `public` sein, damit der Test (anderes Package) sie aufrufen kann.' },
+        { text: 'Nach der Korrektur simuliert `setDatum` im Test einen Zeitsprung.', correct: true, why: 'Mit `TestKalender.setDatum(tag2)` stellt man das Datum weiter — ohne echte Zeit zu verbrauchen.' },
+        { text: 'Der Parameter müsste `LocalDate.now()` heißen.', correct: false, why: 'Der Parameter soll ein frei wählbares Datum akzeptieren, nicht zwingend das heutige.' }
       ],
-      answer: 1,
-      explain: '`datum` (ohne `this.`) bezieht sich im Scope auf das Feld `datum` selbst — der Parameter `neuesDatum` wird nie verwendet. Das `setDatum` tut nichts Sinnvolles. Richtig: `this.datum = neuesDatum;` — der Parametername und der Feldname müssen unterschiedlich sein, oder man benutzt explizit `this.` für das Feld und den vollen Namen für den Parameter.' },
+      explain: 'Klassischer Namensschatten-Bug: `datum` auf der rechten Seite referenziert das Feld, nicht den Parameter `neuesDatum`. Korrekt: `this.datum = neuesDatum;`.' },
 
     { id: 'K01-S03-F10', sec: 'teststub', type: 'mc', t: 'Warum ist Test 7 ohne TestKalender schwach?',
       prompt: 'Test 7 führt erst eine erfolgreiche Abhebung durch, dann eine fehlgeschlagene — alles am selben Tag. Warum ist dieser Test methodisch schwach?',
@@ -128,7 +130,7 @@ P3.serie({
       answer: 1,
       explain: 'Wenn erfolgreiche und fehlgeschlagene Abhebung am selben Tag passieren, ist `vorher == heute` immer wahr — egal ob die Implementierung das Datum setzt oder nicht. Der Test unterscheidet die Fälle nicht. Mit `TestKalender` stellt man den zweiten Tag ein: dann schlägt der Test wirklich fehl, wenn das Datum fälschlich überschrieben wird.' },
 
-    { id: 'K01-S03-F11', sec: 'teststub', type: 'code', t: 'TestKalender schreiben',
+    { id: 'K01-S03-F11', sec: 'teststub', type: 'mc', t: 'TestKalender — korrekte Implementierung',
       prompt: 'Schreibe die vollständige Klasse `TestKalender` (ohne JavaDoc). Sie soll:\n- `Kalender` erweitern\n- ein festes `LocalDate` zurückgeben\n- einen Konstruktor mit `LocalDate datum` haben\n- eine Methode `setDatum(LocalDate neuesDatum)` haben',
       options: [
         'class TestKalender extends Kalender {\n    private LocalDate datum;\n    public TestKalender(LocalDate datum) { this.datum = datum; }\n    @Override\n    public LocalDate getHeutigesDatum() { return datum; }\n    public void setDatum(LocalDate neuesDatum) { this.datum = neuesDatum; }\n}',
@@ -174,7 +176,7 @@ P3.serie({
       answer: 1,
       explain: '`<fileSets>` → Verzeichnis-Einträge (z. B. `src/`, `target/site/jacoco`). `<files>` → einzelne, explizit benannte Dateien (z. B. `pom.xml`). Man braucht beide, weil `pom.xml` im Projekt-Root liegt und kein ganzes Verzeichnis dazu kopiert werden soll.' },
 
-    { id: 'K01-S03-F15', sec: 'assembly', type: 'coderev', t: 'groupId fehlt beim assembly-Plugin',
+    { id: 'K01-S03-F15', sec: 'assembly', type: 'mc', t: 'groupId fehlt beim assembly-Plugin',
       prompt: 'Folgende Plugin-Konfiguration wird so in der Aufgabe angegeben:\n```xml\n<plugin>\n  <artifactId>maven-assembly-plugin</artifactId>\n  <version>3.8.0</version>\n  ...\n</plugin>\n```\nWarum fehlt `<groupId>`?',
       options: [
         'Das ist ein Fehler — ohne `groupId` schlägt der Build fehl.',
