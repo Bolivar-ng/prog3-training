@@ -1,248 +1,339 @@
-/* Kapitel 01 · Serie S03: Übung 1 – JaCoCo, Tests & Assembly
+/* Kapitel 01 · Serie S03: Übung 1 – JaCoCo, TestStub & Assembly
    Format: siehe README.md. Frage-IDs niemals ändern oder neu vergeben. */
 P3.serie({
   id: 'K01-S03',
   kapitel: 'K01',
   titel: 'Übung 1: JaCoCo, TestStub & Assembly',
-  beschreibung: 'Klausurübung zur Prog3-Abgabe: JaCoCo-Konfiguration, TestKalender als Test Stub, Surefire argLine, taglist-Plugin, Assembly-Descriptor und Maven clean. Gemischte Aufgabentypen: MC, Code-Review, Code schreiben.',
+  beschreibung: 'Klausurübung zur Prog3-Abgabe: JaCoCo-Konfiguration, TestKalender als Test Stub, argLine, taglist-Plugin, Assembly-Descriptor und Maven clean. Gemischte Aufgabentypen.',
   neu: true,
   themen: [
-    { id: 'jacoco',    name: 'JaCoCo & Coverage' },
-    { id: 'teststub',  name: 'TestKalender / Test Stub' },
-    { id: 'assembly',  name: 'Assembly & Abgabe-JAR' },
-    { id: 'phasen',    name: 'Maven-Phasen & clean' }
+    { id: 'jacoco',   name: 'JaCoCo & Coverage' },
+    { id: 'teststub', name: 'TestKalender / Test Stub' },
+    { id: 'assembly', name: 'Assembly & Abgabe-JAR' },
+    { id: 'phasen',   name: 'Maven-Phasen & clean' }
   ],
   fragen: [
 
     /* ========== JaCoCo & Coverage ========== */
 
-    { id: 'K01-S03-F01', sec: 'jacoco', type: 'mc', t: 'prepare-agent — Zweck',
-      prompt: 'Was macht das Goal `prepare-agent` des JaCoCo-Plugins?',
+    { id: 'K01-S03-F01', sec: 'jacoco', type: 'fill', t: 'JaCoCo-Execution vervollständigen',
+      prompt: 'Vervollständige die JaCoCo-Konfiguration für `prepare-agent`.',
+      code: `<plugin>
+  <groupId>org.jacoco</groupId>
+  <artifactId>jacoco-maven-plugin</artifactId>
+  <version>0.8.12</version>
+  <executions>
+    <execution>
+      <goals><goal>[[0]]</goal></goals>
+      <phase>[[1]]</phase>
+    </execution>
+  </executions>
+</plugin>`,
+      blanks: [
+        { options: ['prepare-agent', 'report', 'check', 'instrument'], answer: 0,
+          why: '`prepare-agent` instrumentiert den Bytecode und schreibt die JVM-Argumente in `${argLine}`.' },
+        { options: ['test-compile', 'test', 'compile', 'package'], answer: 0,
+          why: 'Muss vor dem Start der Tests gebunden sein — `test-compile` kommt nach `compile`, aber vor `test`.' }
+      ],
+      explain: '`prepare-agent` muss vor `test` laufen (Phase `test-compile`), damit JaCoCo die JVM mit `-javaagent:...` starten kann, bevor Surefire die Tests ausführt.' },
+
+    { id: 'K01-S03-F02', sec: 'jacoco', type: 'mc', t: 'Was macht prepare-agent?',
+      prompt: 'Was genau schreibt `prepare-agent` in die Maven-Property `${argLine}`?',
       options: [
-        'Es generiert den HTML-Coverage-Report in `target/site/jacoco/`.',
-        'Es instrumentiert den kompilierten Bytecode und schreibt JVM-Argumente in die Maven-Property `${argLine}`.',
-        'Es startet die JUnit-Tests mit dem Surefire-Plugin.',
-        'Es packt den Bytecode in ein JAR-Archiv.'
+        'Den Pfad zur `jacoco.exec`-Ausgabedatei als `-Xmx`-Flag.',
+        'JVM-Startargumente für den Surefire-Agenten, damit JaCoCo den Bytecode zur Laufzeit messen kann.',
+        'Die Liste aller zu testenden Klassen als Komma-getrennte `classpath`-Einträge.',
+        'Den JUnit-5-Provider-Klassennamen für den Surefire-Runner.'
       ],
       answer: 1,
-      explain: '`prepare-agent` fügt JaCoCo-Hooks in den Bytecode ein (Instrumentierung) und hinterlegt die nötigen JVM-Startargumente in der Maven-Property `argLine`. Surefire muss diese dann mit `<argLine>@{argLine}</argLine>` weitergeben — sonst misst JaCoCo nichts.' },
+      explain: 'JaCoCo instrumentiert zur Laufzeit per Java-Agent (`-javaagent:path/to/jacocoagent.jar=...`). Surefire übergibt diesen Wert an die Test-JVM mit `<argLine>@{argLine}</argLine>`. Ohne diese Weitergabe misst JaCoCo gar nichts.' },
 
-    { id: 'K01-S03-F02', sec: 'jacoco', type: 'mc', t: 'Phasenbindung prepare-agent',
-      prompt: 'An welche Maven-Phase wird `prepare-agent` in der Aufgabenstellung gebunden — und warum genau diese?',
-      options: [
-        '`compile` — weil JaCoCo Zugriff auf den Quellcode braucht.',
-        '`test` — weil die Tests schon laufen müssen, bevor JaCoCo starten kann.',
-        '`test-compile` — weil der Bytecode kompiliert sein muss, aber die Tests noch nicht gestartet wurden.',
-        '`package` — weil JaCoCo ins finale JAR eingebaut wird.'
+    { id: 'K01-S03-F03', sec: 'jacoco', type: 'order', t: 'Reihenfolge der JaCoCo-Phasen',
+      prompt: 'Bringe die Schritte eines vollständigen JaCoCo-Builds in die richtige Reihenfolge.',
+      items: [
+        '`compile` (Produktionscode übersetzen)',
+        '`test-compile` + JaCoCo `prepare-agent` (Bytecode instrumentieren)',
+        '`test` — Surefire startet Test-JVM mit `@{argLine}`',
+        'JaCoCo schreibt `jacoco.exec` (Rohdaten)',
+        '`test` Phase Ende — JaCoCo `report` erzeugt HTML in `target/site/jacoco/`',
+        '`package` — Assembly und taglist laufen'
       ],
-      answer: 2,
-      explain: '`test-compile` kommt nach `compile`, aber vor `test`. Zu diesem Zeitpunkt ist der Bytecode fertig (instrumentierbar), aber die Tests laufen noch nicht. JaCoCo muss die JVM-Argumente setzen, BEVOR Surefire die Tests startet — sonst greift die Messung nicht.' },
+      explain: '`prepare-agent` und `report` hängen beide am Lifecycle, aber an verschiedenen Phasen. Ohne `prepare-agent` gibt es keine `jacoco.exec`, ohne die kein Report.' },
 
-    { id: 'K01-S03-F03', sec: 'jacoco', type: 'mc', t: 'Branch Coverage verstehen',
-      prompt: 'Der JaCoCo-Report zeigt 85 % Branch Coverage für `Sparbuch`. Was bedeutet das?',
-      options: [
-        '85 % der Zeilen wurden ausgeführt.',
-        '85 % der Methoden wurden aufgerufen.',
-        'Ca. 3 von 16 Verzweigungspfaden (if/else true+false) wurden nicht durch Tests abgedeckt.',
-        'Alle Branches wurden getestet; 15 % der Tests schlugen fehl.'
+    { id: 'K01-S03-F04', sec: 'jacoco', type: 'review', t: 'Surefire-Konfiguration prüfen',
+      prompt: 'Welche Befunde treffen auf diese Surefire-Konfiguration zu?',
+      code: `<plugin>
+  <artifactId>maven-surefire-plugin</artifactId>
+  <version>3.5.2</version>
+  <configuration>
+    <argLine>${argLine}</argLine>
+  </configuration>
+</plugin>`,
+      findings: [
+        { text: '`${argLine}` sollte `@{argLine}` sein.', correct: true,
+          why: '`${argLine}` ist eine Maven-Property und wird beim POM-Parsen aufgelöst (vor JaCoCo). `@{argLine}` wird erst zur Laufzeit der Phase aufgelöst — wenn JaCoCo den Wert schon gesetzt hat.' },
+        { text: 'Die `<version>` von Surefire fehlt — das führt zu einem Build-Fehler.', correct: false,
+          why: 'Die Version ist angegeben (3.5.2). Fehlen würde sie auch nicht zum Fehler führen, Maven würde die Version aus der Super-POM nehmen.' },
+        { text: 'Ohne `@{argLine}` misst JaCoCo keine Coverage, weil der Agent nie gestartet wird.', correct: true,
+          why: 'Mit `${argLine}` bekommt Surefire einen leeren String oder einen alten Wert. Der JaCoCo-Agent (`-javaagent:...`) wird nie an die Test-JVM übergeben.' },
+        { text: 'Die `<groupId>` fehlt — der Build scheitert.', correct: false,
+          why: '`maven-surefire-plugin` gehört zu `org.apache.maven.plugins` — die Standard-GroupId aus Mavens Super-POM. Sie kann weggelassen werden.' }
       ],
-      answer: 2,
-      explain: 'Branch Coverage misst, ob jeder Zweig einer Verzweigung (if true UND if false) mindestens einmal ausgeführt wurde. 85 % bei 16 Branches = ~14 von 16 Pfaden abgedeckt, ~2-3 fehlen. Ein Test, der eine Methode aufruft, aber nie den else-Pfad betritt, zählt nicht.' },
+      explain: '`${}` vs `@{}` ist die häufigste JaCoCo-Falle. Ersteres: Maven löst beim Parsen auf — da ist `argLine` noch leer. Letzteres: Maven löst zur Ausführungszeit auf — nach `prepare-agent`.' },
 
-    { id: 'K01-S03-F04', sec: 'jacoco', type: 'mc', t: '@{argLine} in Eclipse',
-      prompt: 'Beim Starten der Tests direkt aus Eclipse erscheint die Warnung: `could not open \'{argLine}\'`. Was ist die Ursache — und was sollte man tun?',
+    { id: 'K01-S03-F05', sec: 'jacoco', type: 'mc', t: 'Branch Coverage 85 %',
+      prompt: 'JaCoCo meldet für `Sparbuch`: 85 % Branch Coverage, 16 Branches gesamt. Was fehlt noch?',
       options: [
-        'Die pom.xml ist fehlerhaft. Man muss `<argLine>` entfernen.',
-        'Eclipse kennt die Maven-Property `@{argLine}` nicht. Der Fehler ist harmlos — `mvn test` funktioniert einwandfrei.',
-        'JaCoCo ist nicht installiert. Man muss `mvn install` ausführen.',
-        'Man muss `test-compile` in `initialize` umbenennen.'
+        '15 Testmethoden fehlen noch.',
+        'Ca. 2–3 Verzweigungspfade (ein `true`- oder `false`-Ast eines if/else) wurden nie ausgeführt.',
+        '85 % der Zeilen wurden ausgeführt; 15 % sind tote Code-Zeilen.',
+        'Der JaCoCo-Report ist unvollständig — es wurden nicht alle Klassen analysiert.'
       ],
       answer: 1,
-      explain: 'Eclipse führt Tests direkt über JUnit aus, nicht über Maven. Die Property `@{argLine}` existiert nur im Maven-Lifecycle — Eclipse kann sie nicht auflösen. Das Ergebnis ist eine harmlose Warnung. Der vollständige Build mit `mvn test` oder `mvn package` funktioniert korrekt.' },
-
-    { id: 'K01-S03-F05', sec: 'jacoco', type: 'mc', t: 'JaCoCo includes — Zweck',
-      prompt: 'In der Aufgabe wird JaCoCo so konfiguriert:\n```xml\n<includes>\n  <include>bankprojekt/basisdaten/Sparbuch.class</include>\n</includes>\n```\nWas bewirkt diese Konfiguration?',
-      options: [
-        'Nur die Datei `Sparbuch.java` wird kompiliert.',
-        'Der Coverage-Report enthält ausschließlich die Klasse `Sparbuch` — alle anderen Klassen werden ignoriert.',
-        'JaCoCo testet nur den Konstruktor von `Sparbuch`.',
-        'Die Klasse `Sparbuch` wird aus dem JAR ausgeschlossen.'
-      ],
-      answer: 1,
-      explain: 'Mit `<includes>` filtert man, welche Klassen im Report erscheinen. Ohne Filter würde JaCoCo alle kompilierten Klassen des Projekts analysieren — das wäre für eine Übung unübersichtlich. Hier soll nur die Coverage von `Sparbuch` bewertet werden.' },
+      explain: 'Branch Coverage zählt jeden einzelnen Pfad einer Verzweigung: `if (x)` hat Pfad true UND Pfad false. 85 % von 16 = ~13,6 → 14 Pfade abgedeckt, ~2 fehlen. Ein Test, der `abheben()` aufruft ohne je eine Exception auszulösen, deckt den `catch`-Branch nie ab.' },
 
     /* ========== TestKalender / Test Stub ========== */
 
     { id: 'K01-S03-F06', sec: 'teststub', type: 'mc', t: 'Warum kein setDatum in Kalender?',
-      prompt: 'Warum darf man `setDatum(LocalDate d)` NICHT direkt in die Produktionsklasse `Kalender` schreiben?',
+      prompt: 'Warum soll `setDatum(LocalDate d)` NICHT in die Produktionsklasse `Kalender` geschrieben werden?',
       options: [
-        'Weil `LocalDate` immutable ist.',
-        'Weil `Kalender` `final` ist und nicht verändert werden darf.',
-        'Weil Produktionscode keine Test-Infrastruktur enthalten soll — `src/main/` weiß nie, dass es getestet wird.',
-        'Weil `setDatum` in Maven reserviert ist.'
+        'Weil `Kalender` `final` ist und nicht erweitert werden kann.',
+        'Weil `LocalDate` unveränderlich ist und keine Setter erlaubt.',
+        'Weil Produktionscode keine Methoden enthalten soll, die nur für Tests existieren.',
+        'Weil `setDatum` in Maven als reserviertes Keyword gilt.'
       ],
       answer: 2,
-      explain: 'Separation of Concerns: Produktionscode (`src/main/`) soll keine Methoden enthalten, die ausschließlich für Tests gebraucht werden. Ein `setDatum` in `Kalender` wäre tote API im Produktionsbetrieb — und ein Zeichen, dass die Architektur nicht testbar gestaltet wurde. Die Lösung ist ein Test Stub (`TestKalender`) in `src/test/`.' },
+      explain: 'Separation of Concerns: `src/main/` weiß nicht, dass es getestet wird. Eine Methode, die nur existiert, damit ein Test das Datum manipulieren kann, gehört nicht in den Produktionscode. Die Lösung: `TestKalender` als Subklasse in `src/test/` — dort ist das legitim.' },
 
-    { id: 'K01-S03-F07', sec: 'teststub', type: 'mc', t: 'Test Stub — Definition',
-      prompt: 'Was ist ein Test Stub im Sinne von Clean Testing?',
-      options: [
-        'Eine JUnit-Annotation, die einen Test als unvollständig markiert.',
-        'Eine Unterklasse (oder Implementierung), die eine Methode mit kontrolliertem Rückgabewert überschreibt, damit Tests deterministisch werden.',
-        'Eine Klasse, die alle Methoden des Originals mit `throw new UnsupportedOperationException()` überschreibt.',
-        'Ein Maven-Plugin, das Testdaten generiert.'
+    { id: 'K01-S03-F07', sec: 'teststub', type: 'fill', t: 'TestKalender vervollständigen',
+      prompt: 'Vervollständige `TestKalender`. Die Klasse liegt in `src/test/java/bankprojekt/tests/`.',
+      code: `package bankprojekt.tests;
+import java.time.LocalDate;
+import bankprojekt.nuetzliches.Kalender;
+
+public class TestKalender [[0]] Kalender {
+    private LocalDate datum;
+
+    public TestKalender(LocalDate datum) {
+        [[1]].datum = datum;
+    }
+
+    @Override
+    public LocalDate [[2]]() {
+        return datum;
+    }
+
+    public void setDatum(LocalDate neuesDatum) {
+        this.datum = [[3]];
+    }
+}`,
+      blanks: [
+        { options: ['extends', 'implements', 'import'], answer: 0,
+          why: '`Kalender` ist eine Klasse, kein Interface — man verwendet `extends`, nicht `implements`.' },
+        { options: ['this', 'super', 'datum'], answer: 0,
+          why: 'Feld `datum` und Parameter `datum` heißen gleich → `this.datum` für das Feld, sonst Namensschatten.' },
+        { options: ['getHeutigesDatum', 'getDatum', 'getDate'], answer: 0,
+          why: '`getHeutigesDatum()` ist die Methode aus `Kalender`, die überschrieben werden soll.' },
+        { options: ['neuesDatum', 'datum', 'this.datum'], answer: 0,
+          why: 'Der Parameter heißt `neuesDatum` — genau der muss ins Feld geschrieben werden.' }
       ],
-      answer: 1,
-      explain: 'Ein Test Stub ersetzt eine schwer kontrollierbare Abhängigkeit (hier: `LocalDate.now()`) durch eine kontrollierbare Variante. `TestKalender` überschreibt `getHeutigesDatum()` und gibt ein festes Datum zurück. So werden Tests wiederholbar und unabhängig vom echten Systemdatum.' },
+      explain: 'Die vier klassischen Fallen: extends vs implements, this. bei Namensschatten, korrekter Methodenname, und im Setter den Parameter (nicht das Feld) zuweisen.' },
 
-    { id: 'K01-S03-F08', sec: 'teststub', type: 'mc', t: 'Wo liegt TestKalender?',
-      prompt: 'In welchem Verzeichnis und Package liegt `TestKalender`?',
-      options: [
-        '`src/main/java/bankprojekt/nuetzliches/` — selbes Package wie `Kalender`.',
-        '`src/test/java/bankprojekt/tests/` — selbes Package wie `SparbuchTest`, anderes Package als `Kalender`.',
-        '`src/test/java/bankprojekt/nuetzliches/` — selbes Package wie `Kalender`.',
-        '`src/main/java/bankprojekt/tests/` — damit Maven sie findet.'
-      ],
-      answer: 1,
-      explain: '`TestKalender` ist Test-Infrastruktur → gehört nach `src/test/`. Sie muss im selben Package (`bankprojekt.tests`) wie `SparbuchTest` liegen, damit package-private Sichtbarkeit funktioniert. `Kalender` liegt in `bankprojekt.nuetzliches` — einem anderen Package.' },
+    { id: 'K01-S03-F08', sec: 'teststub', type: 'bug', t: 'Fehler in SparbuchTest finden',
+      prompt: 'Test 8 soll prüfen, dass das letzte Abhebungsdatum bei einer fehlgeschlagenen Abhebung NICHT überschrieben wird. Markiere die fehlerhafte(n) Zeile(n) und erkläre.',
+      code: `@Test
+void test8_datumNichtUeberschrieben() throws Exception {
+    LocalDate tag1 = LocalDate.of(2024, 1, 1);
+    LocalDate tag2 = LocalDate.of(2024, 1, 2);
+    TestKalender k = new TestKalender(tag1);
+    Sparbuch s = new Sparbuch(k, new Geldbetrag(1000));
 
-    { id: 'K01-S03-F09', sec: 'teststub', type: 'review', t: 'Bug in setDatum finden',
-      prompt: 'Welche Befunde treffen auf diese Implementierung zu?',
-      code: `public void setDatum(LocalDate neuesDatum) {
-    this.datum = datum;
+    s.abheben(new Geldbetrag(100));          // Erfolg am tag1
+    k.setDatum(tag1);                        // Zeile 8
+    s.abheben(new Geldbetrag(10000));        // soll fehlschlagen
+
+    assertEquals(tag1, s.getLetzteAbhebung());
+}`,
+      required: [7], extra: [],
+      model: `Zeile 8: k.setDatum(tag1) setzt das Datum zurück auf tag1 statt auf tag2. Dadurch passieren beide Abhebungen am selben Tag — der Test kann nicht erkennen, ob die Implementierung das Datum fälschlich überschreibt oder nicht. Korrekt: k.setDatum(tag2).`,
+      explain: 'Wenn beide Abhebungen am selben Tag stattfinden, ist `getLetzteAbhebung() == tag1` immer true — auch bei einer kaputten Implementierung. Mit tag2 für den zweiten Schritt schlägt der Test korrekt fehl, wenn das Datum fälschlich gesetzt wird.' },
+
+    { id: 'K01-S03-F09', sec: 'teststub', type: 'review', t: 'TestKalender-Abgabe reviewen',
+      prompt: 'Ein Kommilitone gibt diesen `TestKalender` ab. Welche Befunde treffen zu?',
+      code: `package bankprojekt.nuetzliches;
+import java.time.LocalDate;
+
+public class TestKalender extends Kalender {
+    LocalDate datum;
+
+    TestKalender(LocalDate datum) {
+        this.datum = datum;
+    }
+
+    @Override
+    public LocalDate getHeutigesDatum() {
+        return datum;
+    }
 }`,
       findings: [
-        { text: '`this.datum = datum` ist ein Selbstzuweisungs-Bug — der Parameter `neuesDatum` wird ignoriert.', correct: true, why: '`datum` ohne `this.` referenziert das Feld selbst. Korrekt: `this.datum = neuesDatum;`.' },
-        { text: 'Die Methode sollte `private` statt `public` sein.', correct: false, why: '`setDatum` muss `public` sein, damit der Test (anderes Package) sie aufrufen kann.' },
-        { text: 'Nach der Korrektur simuliert `setDatum` im Test einen Zeitsprung.', correct: true, why: 'Mit `TestKalender.setDatum(tag2)` stellt man das Datum weiter — ohne echte Zeit zu verbrauchen.' },
-        { text: 'Der Parameter müsste `LocalDate.now()` heißen.', correct: false, why: 'Der Parameter soll ein frei wählbares Datum akzeptieren, nicht zwingend das heutige.' }
+        { text: 'Das Package ist falsch — `TestKalender` gehört nach `bankprojekt.tests`, nicht `bankprojekt.nuetzliches`.', correct: true,
+          why: '`TestKalender` ist Test-Infrastruktur und gehört in das Test-Source-Tree (`src/test/`). Im Produktions-Package würde sie ohne JUnit-Dependency kompiliert und ins JAR gepackt.' },
+        { text: '`datum` ist package-private statt `private` — kein echter Bug, aber schlechter Stil.', correct: true,
+          why: 'Attribute sollen laut Hubrich-Konventionen `private` sein. Package-private ist hier kein Fehler, aber nicht regelkonform.' },
+        { text: '`setDatum` fehlt — damit kann der Test das Datum nicht weiterschalten.', correct: true,
+          why: 'Ohne `setDatum` kann Test 8 nicht prüfen, ob das Datum bei einer fehlgeschlagenen Abhebung korrekt bleibt (zwei verschiedene Tage).' },
+        { text: 'Der Konstruktor sollte `public` sein.', correct: false,
+          why: 'Weil `TestKalender` und `SparbuchTest` im selben Package wären (wenn das Package korrekt wäre), reicht package-private. Es ist kein Fehler — aber falsche Platzierung ist das eigentliche Problem.' }
       ],
-      explain: 'Klassischer Namensschatten-Bug: `datum` auf der rechten Seite referenziert das Feld, nicht den Parameter `neuesDatum`. Korrekt: `this.datum = neuesDatum;`.' },
+      explain: 'Drei Probleme gleichzeitig: falsches Package (hätte nötigste Konsequenz), fehlendes Sichtbarkeitsmodifier, und fehlendes `setDatum`. In einer Klausur zählen alle drei.' },
 
-    { id: 'K01-S03-F10', sec: 'teststub', type: 'mc', t: 'Warum ist Test 7 ohne TestKalender schwach?',
-      prompt: 'Test 7 führt erst eine erfolgreiche Abhebung durch, dann eine fehlgeschlagene — alles am selben Tag. Warum ist dieser Test methodisch schwach?',
+    { id: 'K01-S03-F10', sec: 'teststub', type: 'mc', t: 'Wo liegt TestKalender im Projekt?',
+      prompt: 'In welchem Ordner und Package liegt `TestKalender`?',
       options: [
-        'Weil man mindestens 3 Abhebungen testen muss.',
-        'Weil der Test auch dann bestehen würde, wenn die Implementierung das Datum bei fehlgeschlagener Abhebung fälschlicherweise überschreibt — da beide Daten gleich sind.',
-        'Weil `assertEquals` für Datumsvergleiche nicht geeignet ist.',
-        'Weil `GesperrtException` nicht abgefangen wird.'
+        '`src/main/java/bankprojekt/nuetzliches/` — selbes Package wie `Kalender`.',
+        '`src/test/java/bankprojekt/tests/` — selbes Package wie `SparbuchTest`.',
+        '`src/test/java/bankprojekt/nuetzliches/` — gleiches Package wie `Kalender`, aber im Testbaum.',
+        '`src/main/java/bankprojekt/tests/` — damit Maven sie in den classpath aufnimmt.'
       ],
       answer: 1,
-      explain: 'Wenn erfolgreiche und fehlgeschlagene Abhebung am selben Tag passieren, ist `vorher == heute` immer wahr — egal ob die Implementierung das Datum setzt oder nicht. Der Test unterscheidet die Fälle nicht. Mit `TestKalender` stellt man den zweiten Tag ein: dann schlägt der Test wirklich fehl, wenn das Datum fälschlich überschrieben wird.' },
-
-    { id: 'K01-S03-F11', sec: 'teststub', type: 'mc', t: 'TestKalender — korrekte Implementierung',
-      prompt: 'Schreibe die vollständige Klasse `TestKalender` (ohne JavaDoc). Sie soll:\n- `Kalender` erweitern\n- ein festes `LocalDate` zurückgeben\n- einen Konstruktor mit `LocalDate datum` haben\n- eine Methode `setDatum(LocalDate neuesDatum)` haben',
-      options: [
-        'class TestKalender extends Kalender {\n    private LocalDate datum;\n    public TestKalender(LocalDate datum) { this.datum = datum; }\n    @Override\n    public LocalDate getHeutigesDatum() { return datum; }\n    public void setDatum(LocalDate neuesDatum) { this.datum = neuesDatum; }\n}',
-        'class TestKalender implements Kalender {\n    private LocalDate datum;\n    public TestKalender(LocalDate d) { datum = d; }\n    public LocalDate getHeutigesDatum() { return datum; }\n}',
-        'class TestKalender extends Kalender {\n    @Override\n    public LocalDate getHeutigesDatum() { return LocalDate.now(); }\n}',
-        'class TestKalender {\n    private LocalDate datum;\n    public LocalDate getDatum() { return datum; }\n}'
-      ],
-      answer: 0,
-      explain: '`TestKalender` muss `extends Kalender` verwenden (kein `implements` — `Kalender` ist eine Klasse, kein Interface). `getHeutigesDatum()` wird mit `@Override` überschrieben und gibt das gespeicherte `datum` zurück. `setDatum` nimmt `neuesDatum` als Parameter und schreibt ihn in `this.datum` — nicht `this.datum = datum` (das wäre der Bug).' },
+      explain: '`TestKalender` ist Test-Infrastruktur → `src/test/`. Sie teilt das Package mit `SparbuchTest` (`bankprojekt.tests`), nicht mit `Kalender` (`bankprojekt.nuetzliches`). Das ist Konvention: Test-Stubs gehören zu den Tests, nicht zum Produktionscode.' },
 
     /* ========== Assembly & Abgabe-JAR ========== */
 
+    { id: 'K01-S03-F11', sec: 'assembly', type: 'fill', t: 'Assembly-Descriptor vervollständigen',
+      prompt: 'Vervollständige den Assembly-Descriptor für die Abgabe.',
+      code: `<assembly>
+  <id>abgabe</id>
+  <formats><format>[[0]]</format></formats>
+  <[[1]]>false</…>
+  <fileSets>
+    <fileSet>
+      <directory>src</directory>
+      <outputDirectory>[[2]]</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/site/jacoco</directory>
+      <outputDirectory>[[3]]</outputDirectory>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>[[4]]</source>
+      <outputDirectory>/</outputDirectory>
+    </file>
+  </files>
+</assembly>`,
+      blanks: [
+        { options: ['jar', 'zip', 'tar.gz', 'war'], answer: 0,
+          why: 'Die Aufgabe verlangt ein JAR als Abgabeformat.' },
+        { options: ['includeBaseDirectory', 'baseDirectory', 'outputDirectory'], answer: 0,
+          why: 'Ohne `false` legt Assembly alle Dateien in einen Unterordner mit dem Artefaktnamen.' },
+        { options: ['src', 'source', 'main'], answer: 0,
+          why: 'Der `src`-Ordner soll im JAR direkt als `src/` erscheinen.' },
+        { options: ['jacoco', 'target/site/jacoco', 'coverage'], answer: 0,
+          why: 'Die JaCoCo-HTML-Dateien sollen im JAR unter `jacoco/` liegen.' },
+        { options: ['pom.xml', 'target/pom.xml', 'src/pom.xml'], answer: 0,
+          why: 'Die `pom.xml` liegt im Projekt-Root und soll einzeln mit `<files>` ins JAR-Root kopiert werden.' }
+      ],
+      explain: 'Assembly-Descriptors sind präzise: `fileSets` für Verzeichnisse, `files` für einzelne Dateien. `includeBaseDirectory=false` verhindert den `projektname/`-Wrapper.' },
+
     { id: 'K01-S03-F12', sec: 'assembly', type: 'mc', t: 'descriptor vs descriptorRef',
-      prompt: 'Das Assembly-Plugin wird mit `<descriptor>src/assembly/abgabe.xml</descriptor>` konfiguriert, nicht mit `<descriptorRef>`. Warum?',
+      prompt: 'Warum wird `<descriptor>src/assembly/abgabe.xml</descriptor>` benutzt statt `<descriptorRef>jar-with-dependencies</descriptorRef>`?',
       options: [
-        'Weil `descriptorRef` veraltet und in neueren Maven-Versionen entfernt wurde.',
-        '`descriptorRef` zeigt auf vordefinierte Templates (z. B. `jar-with-dependencies`). Keines davon passt zur gewünschten Kombination aus `src/`, `jacoco/`, `pom.xml` und `taglist.html` — daher braucht man einen eigenen Descriptor.',
-        'Weil `descriptor` schneller ist als `descriptorRef`.',
-        'Weil `descriptorRef` nur für ZIP-Archive funktioniert.'
+        'Weil `descriptorRef` in neueren Maven-Versionen entfernt wurde.',
+        'Weil `jar-with-dependencies` alle Dependencies ins JAR packt, aber keine `src/`-Ordner oder Reports.',
+        'Weil `descriptor` schneller ausgeführt wird als `descriptorRef`.',
+        'Weil `descriptorRef` nur für WAR-Archive funktioniert.'
       ],
       answer: 1,
-      explain: 'Maven Assembly kennt einige Standard-Descriptors (z. B. `jar-with-dependencies` fügt alle Dependencies in ein FAT-JAR). Unsere Abgabe ist aber maßgeschneidert: `src/`-Ordner, JaCoCo-Report, `taglist.html`, `pom.xml`. Für eine solche individuelle Zusammensetzung schreibt man einen eigenen XML-Descriptor.' },
+      explain: '`descriptorRef` bietet vordefinierte Templates: `jar-with-dependencies`, `src`, `bin`. Keins davon passt zur Abgabe (Kombination aus `src/`, JaCoCo-Report, `taglist.html`, `pom.xml`). Ein eigener Descriptor ist die einzige Lösung.' },
 
-    { id: 'K01-S03-F13', sec: 'assembly', type: 'mc', t: 'includeBaseDirectory false',
-      prompt: 'Was bewirkt `<includeBaseDirectory>false</includeBaseDirectory>` im Assembly-Descriptor?',
-      options: [
-        'Das Basis-Verzeichnis des Projekts wird aus dem Classpath entfernt.',
-        'Die Dateien liegen direkt im JAR-Root ohne einen übergeordneten Ordner wie `bankprojekt-0.0.1-SNAPSHOT/`.',
-        'Der `src/`-Ordner wird nicht ins JAR eingebunden.',
-        'Das Zielformat ändert sich von JAR zu ZIP.'
+    { id: 'K01-S03-F13', sec: 'assembly', type: 'match', t: 'Assembly-Elemente zuordnen',
+      prompt: 'Ordne jedem Assembly-XML-Element seine Funktion zu.',
+      pairs: [
+        ['`<fileSets>`', 'Ganzes Verzeichnis ins JAR einbinden'],
+        ['`<files>`', 'Einzelne benannte Datei einbinden'],
+        ['`<includeBaseDirectory>false</includeBaseDirectory>`', 'Verhindert einen Wrapper-Ordner mit dem Artefaktnamen'],
+        ['`<outputDirectory>jacoco</outputDirectory>`', 'Legt den Zielpfad im JAR fest'],
+        ['`<id>abgabe</id>`', 'Bestimmt den Suffix im Dateinamen des erzeugten JARs']
       ],
-      answer: 1,
-      explain: 'Ohne `false` legt Maven Assembly standardmäßig alle Dateien in einen Unterordner mit dem Artifaktnamen (z. B. `bankprojekt-0.0.1-SNAPSHOT/src/...`). Mit `false` landen die Dateien direkt im JAR-Root: `src/`, `jacoco/`, `pom.xml`. Das ist die erwartete Struktur für die Abgabe.' },
+      explain: 'Der `<id>`-Wert erscheint im Dateinamen: `bankprojekt-0.0.1-SNAPSHOT-abgabe.jar`. `outputDirectory` mit `/` bedeutet Wurzel des Archivs.' },
 
-    { id: 'K01-S03-F14', sec: 'assembly', type: 'mc', t: 'fileSets vs files',
-      prompt: 'Der Descriptor enthält sowohl `<fileSets>` als auch `<files>`. Was ist der Unterschied?',
+    { id: 'K01-S03-F14', sec: 'assembly', type: 'mc', t: 'taglist-Plugin — Phasenbindung',
+      prompt: 'In welcher Phase läuft das `taglist-maven-plugin` und warum?',
       options: [
-        '`fileSets` kopiert einzelne Dateien, `files` kopiert ganze Verzeichnisse.',
-        '`fileSets` kopiert ganze Verzeichnisse; `files` kopiert einzelne benannte Dateien.',
-        '`fileSets` ist für Binärdateien, `files` für Textdateien.',
-        '`fileSets` und `files` sind Synonyme — man kann beides beliebig verwenden.'
-      ],
-      answer: 1,
-      explain: '`<fileSets>` → Verzeichnis-Einträge (z. B. `src/`, `target/site/jacoco`). `<files>` → einzelne, explizit benannte Dateien (z. B. `pom.xml`). Man braucht beide, weil `pom.xml` im Projekt-Root liegt und kein ganzes Verzeichnis dazu kopiert werden soll.' },
-
-    { id: 'K01-S03-F15', sec: 'assembly', type: 'mc', t: 'groupId fehlt beim assembly-Plugin',
-      prompt: 'Folgende Plugin-Konfiguration wird so in der Aufgabe angegeben:\n```xml\n<plugin>\n  <artifactId>maven-assembly-plugin</artifactId>\n  <version>3.8.0</version>\n  ...\n</plugin>\n```\nWarum fehlt `<groupId>`?',
-      options: [
-        'Das ist ein Fehler — ohne `groupId` schlägt der Build fehl.',
-        'Weil `maven-assembly-plugin` kein Apache-Plugin ist und keine `groupId` hat.',
-        'Weil `org.apache.maven.plugins` der Standard-GroupId in Mavens Super-POM ist — Maven ergänzt sie automatisch.',
-        'Weil `groupId` nur bei Dependencies, nicht bei Plugins benötigt wird.'
+        '`compile` — damit Kommentare schon beim Übersetzen geprüft werden.',
+        '`test` — damit auch Test-Quelltexte nach TODOs durchsucht werden.',
+        '`package` — damit `taglist.html` im JAR landet, das in derselben Phase gebaut wird.',
+        '`verify` — damit es nach dem JAR-Build läuft und das JAR nicht blockiert.'
       ],
       answer: 2,
-      explain: 'Mavens Super-POM definiert `org.apache.maven.plugins` als Standard-`groupId` für Plugins. Lässt man `groupId` weg, ergänzt Maven diesen Wert automatisch. Das ist eine Maven-Konvention für Official-Apache-Plugins — spart Schreibarbeit und gilt nur für diese Gruppe.' },
-
-    { id: 'K01-S03-F16', sec: 'assembly', type: 'mc', t: 'taglist-maven-plugin — Zweck',
-      prompt: 'Was macht das `taglist-maven-plugin` in dieser Übung?',
-      options: [
-        'Es erstellt Git-Tags für jeden Build.',
-        'Es scannt alle Quelldateien nach Kommentaren mit dem Text `zu erledigen:` und erzeugt daraus eine `taglist.html` mit einer Liste aller offenen TODOs.',
-        'Es generiert JavaDoc-HTML aus den Quellkommentaren.',
-        'Es fügt automatisch `// TODO`-Kommentare an nicht getestete Methoden.'
-      ],
-      answer: 1,
-      explain: '`taglist-maven-plugin` sucht nach konfigurierten Schlagwörtern (hier: `zu erledigen:`) in allen Quelldateien und listet alle Fundstellen in einer HTML-Seite (`taglist.html`) auf. Diese Datei wird vom Assembly-Plugin ins Abgabe-JAR eingebunden, damit die Betreuerin sieht, welche Punkte noch offen sind.' },
+      explain: '`taglist-maven-plugin` läuft in `package`, damit `taglist.html` existiert, wenn das Assembly-Plugin ebenfalls in `package` das Abgabe-JAR zusammenbaut. Würde es später laufen, fehlte die Datei im JAR.' },
 
     /* ========== Maven-Phasen & clean ========== */
 
-    { id: 'K01-S03-F17', sec: 'phasen', type: 'mc', t: 'mvn clean package — was passiert?',
-      prompt: 'Du führst `mvn clean package` aus. In welcher Reihenfolge passiert was?',
-      options: [
-        '`package` → `compile` → `test` → `clean`',
-        '`clean` löscht `target/`, dann: `compile` → `test-compile` (+ JaCoCo prepare-agent) → `test` (+ JaCoCo report) → `package` (+ taglist + assembly)',
-        '`clean` und `package` laufen parallel.',
-        '`clean` löscht nur die `.class`-Dateien, nicht den JaCoCo-Report.'
+    { id: 'K01-S03-F15', sec: 'phasen', type: 'order', t: 'mvn clean package — Reihenfolge',
+      prompt: 'Bringe die Schritte von `mvn clean package` in die richtige Reihenfolge.',
+      items: [
+        '`clean`-Lifecycle: `target/` wird vollständig gelöscht',
+        '`compile`: Produktionscode wird übersetzt',
+        '`test-compile` + JaCoCo `prepare-agent`: Testcode übersetzen, Bytecode instrumentieren',
+        '`test` + JaCoCo `report`: Tests laufen, Coverage-Report wird erzeugt',
+        '`package`: Assembly-Plugin und taglist-Plugin laufen, JAR wird gebaut'
       ],
-      answer: 1,
-      explain: '`clean` und `package` gehören zu zwei verschiedenen Maven-Lifecycles, die hintereinander ausgeführt werden. `clean` leert zuerst `target/` komplett. Dann startet der Default-Lifecycle: compile → test-compile → test → package. An `test-compile` hängt JaCoCo `prepare-agent`, an `test` hängt JaCoCo `report`, an `package` hängen taglist und assembly.' },
+      explain: '`clean` und `package` sind zwei separate Lifecycles, die nacheinander ausgeführt werden. Clean läuft komplett durch, dann beginnt der Default-Lifecycle von vorne.' },
 
-    { id: 'K01-S03-F18', sec: 'phasen', type: 'mc', t: 'Warum mvn clean vor Abgabe?',
-      prompt: 'Warum sollte man vor der finalen Abgabe `mvn clean package` statt nur `mvn package` ausführen?',
+    { id: 'K01-S03-F16', sec: 'phasen', type: 'mc', t: 'Warum clean vor Abgabe?',
+      prompt: 'Eine Klasse `AltHilfsmethode.java` wurde gelöscht. Du führst nur `mvn package` aus (ohne `clean`). Was passiert?',
       options: [
-        'Weil `mvn package` alleine keinen JaCoCo-Report erzeugt.',
-        'Weil umbenannte oder gelöschte Klassen als veraltete `.class`-Dateien in `target/` verbleiben und ohne `clean` fälschlicherweise ins JAR gelangen könnten.',
-        'Weil `clean` die pom.xml validiert.',
-        'Weil `mvn package` ohne `clean` keine Tests ausführt.'
+        'Maven bemerkt die gelöschte Datei und entfernt `AltHilfsmethode.class` automatisch.',
+        '`AltHilfsmethode.class` bleibt in `target/` und landet im Abgabe-JAR — obwohl die Klasse längst entfernt wurde.',
+        'Der Build schlägt fehl mit „ClassNotFoundException".',
+        'Maven fragt nach, ob die `.class`-Datei gelöscht werden soll.'
       ],
       answer: 1,
-      explain: 'Wenn man eine Klasse umbenennt oder löscht, bleibt die alte `.class`-Datei in `target/` — Maven kompiliert nur neu geänderte Dateien. `clean` löscht `target/` komplett, sodass der Build garantiert von einem sauberen Zustand startet. Für die Abgabe ist das wichtig: kein veralteter Code im JAR.' },
+      explain: 'Maven kompiliert nur geänderte Dateien neu — gelöschte `.java`-Dateien hinterlassen verwaiste `.class`-Dateien in `target/`. `mvn clean` löscht `target/` komplett, sodass der Build von einem sauberen Zustand startet. Deshalb: immer `mvn clean package` vor einer Abgabe.' },
 
-    { id: 'K01-S03-F19', sec: 'phasen', type: 'mc', t: 'scope=test vs scope=provided',
-      prompt: 'JUnit hat `scope=test`, Lombok hat `scope=provided`. Was ist der Unterschied in der Praxis?',
+    { id: 'K01-S03-F17', sec: 'phasen', type: 'multi', t: 'Was gehört in die Abgabe?',
+      prompt: 'Welche der folgenden Dateien/Ordner gehören in das Abgabe-JAR?',
       options: [
-        'Beide werden nicht ins JAR eingebunden — der Unterschied ist nur dokumentarisch.',
-        '`scope=test` bedeutet: Dependency ist nur beim Kompilieren von Tests verfügbar; `scope=provided` bedeutet: Dependency ist bei Compile + Test verfügbar, aber nicht im finalen JAR, weil die Laufzeitumgebung sie bereitstellt.',
-        '`scope=provided` lädt die Dependency aus dem Internet; `scope=test` aus dem lokalen Maven-Repository.',
-        '`scope=test` und `scope=provided` sind Synonyme seit Maven 3.'
+        '`src/main/java/bankprojekt/basisdaten/Sparbuch.java`',
+        '`target/classes/bankprojekt/basisdaten/Sparbuch.class`',
+        '`target/site/jacoco/index.html`',
+        '`pom.xml`',
+        '`target/site/taglist/taglist.html`',
+        '`.classpath` (Eclipse-Datei)',
+        '`src/assembly/abgabe.xml`'
+      ],
+      answer: [0, 2, 3, 4, 6],
+      explain: 'Das JAR enthält: Quellcode (`src/`), JaCoCo-Report (`target/site/jacoco/`), `pom.xml`, `taglist.html` — und den Descriptor selbst (`src/assembly/abgabe.xml`) weil er Teil von `src/` ist. Nicht enthalten: kompilierte `.class`-Dateien (Bytecode) und IDE-Dateien (`.classpath`).' },
+
+    { id: 'K01-S03-F18', sec: 'phasen', type: 'mc', t: 'scope=test vs scope=provided',
+      prompt: 'JUnit ist mit `scope=test`, Lombok mit `scope=provided` eingetragen. Was ist der entscheidende Unterschied?',
+      options: [
+        '`test` verhindert, dass die Dependency ins JAR gepackt wird; `provided` erlaubt es.',
+        '`provided` ist im Produktionscode verfügbar, `test` nur im Testcode — beide landen nicht im JAR.',
+        '`provided` bedeutet, die Dependency fehlt; Maven muss sie erst herunterladen.',
+        '`test` und `provided` sind identisch — nur der Name unterscheidet sich historisch.'
       ],
       answer: 1,
-      explain: '`scope=test`: nur im Testcode verfügbar, nicht im Produktionscode, nicht im JAR. `scope=provided`: im Produktionscode und Testcode verfügbar (zum Kompilieren), aber NICHT ins JAR gepackt — weil die Laufzeitumgebung (JDK, Appserver) die Dependency bereitstellt. Lombok erzeugt Code zur Compile-Zeit; die JVM braucht die Lombok-Klassen zur Laufzeit nicht mehr.' },
+      explain: 'Beide schließen die Dependency aus dem JAR aus, aber aus verschiedenen Gründen: `test` — nur für Testcode, nicht für Produktionscode. `provided` — für Produktionscode und Tests verfügbar, aber die Laufzeitumgebung liefert sie (JDK, Appserver). Lombok generiert Code beim Kompilieren; zur Laufzeit wird die JAR nicht mehr gebraucht.' },
+
+    { id: 'K01-S03-F19', sec: 'phasen', type: 'explain', t: 'Warum @{argLine} statt ${argLine}?',
+      prompt: 'In der pom.xml steht `<argLine>@{argLine}</argLine>` — nicht `${argLine}`. Erkläre den Unterschied und warum die `@{}`-Variante hier nötig ist.',
+      model: `Maven löst ${}-Ausdrücke beim Parsen der pom.xml auf — bevor irgendeine Phase läuft. Zu diesem Zeitpunkt hat JaCoCo prepare-agent noch gar nicht die Property argLine gesetzt. Ergebnis: Surefire bekommt einen leeren String, kein Agent wird gestartet, JaCoCo misst nichts.
+@{}-Ausdrücke (late binding) werden erst zur Ausführungszeit der jeweiligen Phase aufgelöst. Wenn Surefire in der test-Phase startet, hat prepare-agent in test-compile bereits den JaCoCo-Agent-Aufruf in argLine hinterlegt. So bekommt die Test-JVM den richtigen -javaagent:...-Flag.` },
 
     { id: 'K01-S03-F20', sec: 'phasen', type: 'mc', t: 'Welcher Befehl erzeugt das Abgabe-JAR?',
-      prompt: 'Welcher Maven-Befehl erzeugt das Abgabe-JAR `bankprojekt-0.0.1-SNAPSHOT-abgabe.jar` mit allen geforderten Inhalten?',
+      prompt: 'Welcher Maven-Befehl erzeugt `bankprojekt-0.0.1-SNAPSHOT-abgabe.jar` mit vollständigem JaCoCo-Report und taglist?',
       options: [
-        '`mvn test`',
-        '`mvn compile`',
-        '`mvn package` (oder `mvn clean package`)',
-        '`mvn install`'
+        '`mvn test` — damit laufen Tests und JaCoCo-Report wird erzeugt.',
+        '`mvn install` — damit wird das JAR ins lokale Repository kopiert.',
+        '`mvn clean package` — clean leert target/, package führt Assembly und taglist aus.',
+        '`mvn assembly:single` — ruft das Assembly-Goal direkt auf.'
       ],
       answer: 2,
-      explain: '`mvn package` führt alle Phasen bis einschließlich `package` aus. Erst in der `package`-Phase laufen Assembly-Plugin und taglist-Plugin. `mvn test` stoppt davor. `mvn install` führt zusätzlich noch `install` aus (kopiert das JAR ins lokale Repository) — nicht nötig für die Abgabe.' }
+      explain: '`mvn test` stoppt vor `package` — kein JAR. `mvn install` funktioniert, aber kopiert das JAR zusätzlich ins lokale Repository (unnötig für Abgabe). `mvn assembly:single` ohne voherigen `package`-Lauf würde `taglist.html` und den JaCoCo-Report nicht finden. `mvn clean package` ist der korrekte, saubere Befehl.' }
 
   ]
 });
