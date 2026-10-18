@@ -16,6 +16,6 @@ P3.kapitel([
     titel: 'Maven',
     beschreibung: 'Build-Management: GAV, pom.xml, Lebenszyklus, Dependencies und Scopes, Plugins und Goals, typische Fehler.',
     zusammenfassung: true,
-    serien: ['s01', 's02']
+    serien: ['s01', 's02', 's03']
   }
 ]);
