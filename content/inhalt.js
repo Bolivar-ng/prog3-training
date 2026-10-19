@@ -17,5 +17,13 @@ P3.kapitel([
     beschreibung: 'Build-Management: GAV, pom.xml, Lebenszyklus, Dependencies und Scopes, Plugins und Goals, typische Fehler.',
     zusammenfassung: true,
     serien: ['s01', 's02', 's03']
+  },
+  {
+    id: 'K02',
+    ordner: 'k02',
+    titel: 'Interfaces',
+    beschreibung: 'Interfaces schreiben und verwenden, die Wege der Implementierung (innere, anonyme Klassen), this, compareTo, instanceof, funktionale Interfaces und Lambda-Ausdrücke.',
+    zusammenfassung: true,
+    serien: ['s01']
   }
 ]);
