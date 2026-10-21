@@ -191,7 +191,7 @@
 
   function seite(titel, ...kinder) {
     document.title = titel ? titel + ' – Prog3-Training' : 'Prog3-Training';
-    app.replaceChildren(...kinder);
+    app.replaceChildren(...kinder.filter(k => k != null && k !== false));  // null = „nichts anzeigen“, nicht den Text null
     window.scrollTo({ top: 0 });
   }
 
@@ -216,8 +216,10 @@
     kinder.push(h('div', { class: 'stats' },
       stat(st.n, 'Fragen insgesamt'), stat(st.ok, 'zuletzt richtig'), stat(st.bad + st.half, 'im Fehlertraining'),
       stat(gemerkt.liste().length, 'gemerkt'), stat(verlauf.liste().length, 'Prüfungen geschrieben')));
+    const testKapitel = inhalt.kapitel.filter(istTestbereich);
+    if (testKapitel.length) kinder.push(testzone(testKapitel));
     kinder.push(h('h2', { text: 'Kapitel' }));
-    kinder.push(h('div', { class: 'cards' }, inhalt.kapitel.map(k => {
+    kinder.push(h('div', { class: 'cards' }, inhalt.kapitel.filter(k => !istTestbereich(k)).map(k => {
       const fr = fragenVon(k.id);
       return h('div', { class: 'card' },
         h('h3', {}, h('span', { class: 'kz', text: k.id }), k.titel),
@@ -234,6 +236,43 @@
       kachel('Verlauf', 'Alle geschriebenen Prüfungen mit Punkten und Note, jederzeit nachlesbar.', '#/verlauf', 'Ansehen')));
     seite('', ...kinder);
   }
+  /* Bereich „Probetests“: eigene Farbe, jeder Test direkt startbar */
+  function istTestbereich(k) { return k.bereich === 'tests'; }
+
+  function testMeta(s) {
+    const typen = new Set(s.fragen.map(q => q.type));
+    const praxis = ['input', 'bug', 'fill', 'trace', 'review', 'explain'].some(t => typen.has(t));
+    const theorie = ['mc', 'multi', 'match', 'order'].some(t => typen.has(t));
+    const art = praxis && theorie ? 'Theorie + Praxis' : praxis ? 'Praxis' : 'Theorie';
+    return `${s.fragen.length} Fragen · ${s.dauer || vorschlagMinuten(s.fragen, s)} Minuten · ${art}`;
+  }
+
+  function besterVersuch(sid) {
+    const versuche = verlauf.liste().filter(e => e.quelle === sid);
+    if (!versuche.length) return null;
+    const beste = versuche.reduce((m, e) => Math.max(m, e.prozent || 0), 0);
+    return `${versuche.length}× geschrieben · beste: ${P3.zahl(beste)} % (Note ${P3.note(beste)})`;
+  }
+
+  function testzone(liste) {
+    const karten = liste.flatMap(k => serienVon(k.id)).map(s => {
+      const best = besterVersuch(s.id);
+      return h('div', { class: 'card testcard' },
+        h('h3', {}, h('span', { class: 'kz', text: s.id.split('-')[1] }), s.titel, s.neu ? h('span', { class: 'tag test', text: 'neu' }) : null),
+        h('p', { class: 'tz-meta', text: testMeta(s) }),
+        h('p', { text: s.beschreibung || '' }),
+        best ? h('p', { class: 'barlabel', text: best }) : h('p', { class: 'barlabel', text: 'noch nicht geschrieben' }),
+        h('div', { class: 'actions' },
+          h('a', { class: 'btn test', href: '#/pruefung/' + s.id, text: 'Test starten' }),
+          h('a', { class: 'btn ghost', href: '#/lernen/' + s.id, text: 'Lernmodus' })));
+    });
+    return h('section', { class: 'testzone', 'aria-labelledby': 'tz-titel' },
+      h('span', { class: 'tz-badge', text: 'Probetests' }),
+      h('h2', { id: 'tz-titel', text: 'Probetests: wie im echten Test' }),
+      h('p', { class: 'tz-lead', text: 'Feste Zeit, keine Rückmeldung bis zur Abgabe, danach Auswertung mit Note. Stoff aus allen bisherigen Kapiteln und Wiederholung aus Prog 2.' }),
+      h('div', { class: 'cards' }, karten));
+  }
+
   function stat(n, label) { return h('div', { class: 'stat' }, h('b', { text: String(n) }), h('span', { text: label })); }
   function kachel(titel, text, href, knopf) {
     return h('div', { class: 'card' }, h('h3', { text: titel }), h('p', { text: text }), h('div', { class: 'actions' }, h('a', { class: 'btn ghost', href, text: knopf })));
@@ -254,7 +293,8 @@
     const kinder = [
       inhalt.fehler.length ? h('div', { class: 'banner' }, h('span', {}, h('strong', { text: 'Ladefehler: ' }), inhalt.fehler.join(' · '), ' – Seite mit Strg + F5 neu laden.')) : null,
       h('p', { class: 'crumbs' }, h('a', { href: '#/', text: 'Start' }), ' / ', k.id),
-      h('h1', { text: k.id + ' · ' + k.titel }),
+      istTestbereich(k) ? h('span', { class: 'tz-badge', text: 'Probetests' }) : null,
+      h('h1', { text: istTestbereich(k) ? k.titel : k.id + ' · ' + k.titel }),
       h('p', { class: 'lead', text: k.beschreibung || '' }),
       balken(statistik(fragenVon(kid)))
     ];
@@ -270,12 +310,12 @@
       return h('li', { class: 'serie' },
         h('div', {},
           h('h3', {}, s.id.split('-')[1] + ' · ' + s.titel, s.neu ? h('span', { class: 'tag', text: 'neu' }) : null),
-          h('p', { text: (s.beschreibung || '') + ` (${s.fragen.length} Fragen)` }),
+          h('p', { text: (s.beschreibung || '') + (s.dauer ? ` (${s.fragen.length} Fragen, ${s.dauer} Minuten)` : ` (${s.fragen.length} Fragen)`) }),
           balken(statistik(s.fragen)),
           versuche.length ? h('p', { class: 'barlabel', text: `${versuche.length} Prüfung(en), beste: ${P3.zahl(beste)} % (Note ${P3.note(beste)})` }) : null),
         h('div', { class: 'actions' },
           h('a', { class: 'btn', href: '#/lernen/' + s.id, text: 'Lernmodus' }),
-          h('a', { class: 'btn ghost', href: '#/pruefung/' + s.id, text: 'Prüfungsmodus' })));
+          h('a', { class: istTestbereich(k) ? 'btn test' : 'btn ghost', href: '#/pruefung/' + s.id, text: istTestbereich(k) ? 'Test starten' : 'Prüfungsmodus' })));
     })));
     seite(k.titel, ...kinder);
   }
@@ -406,6 +446,7 @@
   const ZEITEN = [10, 15, 20, 30, 45, 60, 90, 120];
 
   function vorschlagMinuten(fragen, serie) {
+    if (serie && serie.dauer && fragen.length === serie.fragen.length) return serie.dauer;
     const proFrage = (serie && serie.minutenProFrage) || 1.5;
     const roh = fragen.reduce((s, q) => s + (q.minuten || (q.type === 'explain' || q.model ? 3 : q.type === 'trace' || q.type === 'review' ? 2.5 : proFrage)), 0);
     return Math.max(5, Math.ceil(roh / 5) * 5);
@@ -651,7 +692,7 @@
   function viewGross() {
     navAktiv('grosse-pruefung');
     const boxen = inhalt.kapitel.map(k => {
-      const cb = h('input', { type: 'checkbox', value: k.id, checked: true });
+      const cb = h('input', { type: 'checkbox', value: k.id, checked: !istTestbereich(k) });
       return { cb, el: h('label', {}, cb, `${k.id} · ${k.titel} (${fragenVon(k.id).length} Fragen)`) };
     });
     const anzahl = h('select', {}, [10, 20, 30, 40, 60].map(n => h('option', { value: String(n), text: n + ' Fragen', selected: n === 30 })), h('option', { value: '0', text: 'alle Fragen' }));

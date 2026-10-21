@@ -25,5 +25,14 @@ P3.kapitel([
     beschreibung: 'Interfaces schreiben und verwenden, die Wege der Implementierung (innere, anonyme Klassen), this, compareTo, instanceof, funktionale Interfaces und Lambda-Ausdrücke.',
     zusammenfassung: true,
     serien: ['s01']
+  },
+  {
+    id: 'K90',
+    ordner: 'tests',
+    bereich: 'tests',              // eigener Bereich „Probetests“ oben auf der Startseite
+    titel: 'Probetests',
+    beschreibung: 'Tests wie in der Prüfung, 30 bis 40 Minuten, Theorie und Praxis aus allen bisherigen Kapiteln plus Prog-2-Wiederholung.',
+    zusammenfassung: false,
+    serien: ['t01', 't02', 't03']
   }
 ]);

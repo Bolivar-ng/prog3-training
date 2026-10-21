@@ -50,6 +50,7 @@ function pruefeSerie(s, k, sname) {
   if (s.id !== sid) fehler.push(`${wo}: Serien-ID ist "${s.id}", erwartet "${sid}" (aus Dateiname)`);
   if (s.kapitel !== k.id) fehler.push(`${wo}: kapitel ist "${s.kapitel}", erwartet "${k.id}"`);
   if (!s.titel) fehler.push(`${wo}: titel fehlt`);
+  if (s.dauer != null && !(Number.isInteger(s.dauer) && s.dauer >= 5)) fehler.push(`${wo}: dauer muss eine ganze Minutenzahl >= 5 sein`);
   if (!Array.isArray(s.fragen) || !s.fragen.length) { fehler.push(`${wo}: keine Fragen`); return; }
   const themen = new Set((s.themen || []).map(t => t.id));
   s.fragen.forEach(q => {

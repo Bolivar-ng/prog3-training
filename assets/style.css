@@ -20,6 +20,9 @@
   --code-ink: #DCEBEE;
   --code-muted: #6F8C95;
   --star: #C28A00;
+  --test: #B4410C;
+  --test-soft: #FDEEE3;
+  --on-test: #FFFFFF;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
@@ -43,6 +46,9 @@
     --code-ink: #DCEBEE;
     --code-muted: #5E7880;
     --star: #E9C163;
+    --test: #FB9A55;
+    --test-soft: #33200F;
+    --on-test: #1A0E05;
     color-scheme: dark;
   }
 }
@@ -66,6 +72,9 @@
   --code-ink: #DCEBEE;
   --code-muted: #5E7880;
   --star: #E9C163;
+  --test: #FB9A55;
+  --test-soft: #33200F;
+  --on-test: #1A0E05;
   color-scheme: dark;
 }
 
@@ -523,3 +532,32 @@ legend { font-weight: 700; padding: 0 4px; }
   .grade { font-size: 2.6rem; }
 }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+/* ---------- Bereich Probetests ---------- */
+.testzone {
+  background: var(--test-soft);
+  border: 2px solid var(--test);
+  border-radius: 14px;
+  padding: 18px 20px 20px;
+  margin: 4px 0 28px;
+}
+.testzone h2 { margin: 8px 0 4px; color: var(--test); }
+.tz-lead { margin: 0 0 16px; color: var(--ink); max-width: 70ch; font-size: .95rem; }
+.tz-badge {
+  display: inline-block;
+  background: var(--test);
+  color: var(--on-test);
+  font-weight: 700;
+  font-size: .76rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  padding: 3px 11px;
+  border-radius: 99px;
+}
+.testcard { border-top: 5px solid var(--test); }
+.testcard .kz { color: var(--test); }
+.testcard .tz-meta { color: var(--test); font-weight: 700; font-size: .88rem; }
+.tag.test { background: var(--test); color: var(--on-test); }
+.btn.test { background: var(--test); border-color: var(--test); color: var(--on-test); }
+.nav a.nav-test { color: var(--test); font-weight: 700; }
+.nav a.nav-test:hover { background: var(--test-soft); }

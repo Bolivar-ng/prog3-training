@@ -42,6 +42,10 @@ Umfang: **10–20 Fragen pro Serie**, nur die wichtigsten.
 
 Neues Kapitel: Eintrag in `content/inhalt.js` anhängen, Ordner `content/k01/` mit `zusammenfassung.js` und Serien anlegen.
 
+## Probetests
+
+Kapitel `K90` mit `bereich: 'tests'` (Ordner `content/tests/`, Dateien `t01.js`, `t02.js` …) erscheint nicht in der Kapitelliste, sondern als eigener, orange markierter Bereich ganz oben auf der Startseite. Jede Test-Serie hat `dauer` (Minuten): Das ist die feste Zeit im Prüfungsmodus. Ein Probetest mischt Theorie und Praxis aus allen bisherigen Kapiteln; bei mc-Fragen darf die richtige Antwort weder auffällig oft die längste Option noch immer an derselben Position sein.
+
 ## Feste IDs: die wichtigste Regel
 
 Jede Frage hat eine feste ID `Kxx-Snn-Fnn` (z. B. `K00-S04-F07`). Der Fortschritt hängt an dieser ID.
