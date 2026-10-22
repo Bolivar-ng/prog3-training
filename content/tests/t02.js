@@ -143,9 +143,9 @@ public void abheben(Geldbetrag betrag) throws GesperrtException {
         e.printStackTrace();
     }
 }`,
-      required: [9, 11, 12],
-      extra: [6],
-      explain: 'Die Exception wird selbst geworfen (Zeile 9) und sofort selbst gefangen (Zeile 11): Der Aufrufer erfährt nie, dass das Konto gesperrt war. Nur `printStackTrace` (Zeile 12) ist keine Fehlerbehandlung. Außerdem stimmt dann das `throws` in Zeile 6 nicht mehr. Richtig: try/catch weglassen, die Exception an den Aufrufer weitergeben.' },
+      required: [11, 12],
+      extra: [6, 7, 9, 13],
+      explain: 'Die Exception wird in Zeile 9 geworfen und in Zeile 11 **in derselben Methode** sofort wieder gefangen. Zeile 12 schreibt nur einen Stacktrace, danach endet `abheben` normal: Der Aufrufer glaubt, das Abheben hat geklappt, und zahlt womöglich Geld aus. Zwei Regeln sind verletzt: „selbst werfen und selbst fangen“ und „nur printStackTrace im catch“. Das `throws` in Zeile 6 lügt dann ebenfalls. **Richtig:** try/catch (Zeilen 7, 11–13) ganz weglassen, also nur `if (this.gesperrt) throw new GesperrtException(this.nummer);` und danach abbuchen. Gefangen wird beim **Aufrufer**, z. B. in der Ein-/Ausgabe-Klasse, die dem Benutzer eine Meldung zeigt. Merksatz: Wer den Fehler erkennt, wirft. Wer weiß, was zu tun ist, fängt.' },
 
     { id: 'K90-T02-F08', sec: 'exc', type: 'fill', t: 'equals nach Kursstil',
       prompt: 'Vervollständige `equals` für `Kunde` (gleich bei gleichem Nachnamen und Geburtstag).',
