@@ -202,7 +202,7 @@ public class Test {
         '`this.intern` in einer Unterklasse `class Test3 extends Konto` im Paket app'
       ],
       answer: [0, 3],
-      explain: 'Ohne Schlüsselwort (package-private) ist ein Attribut **nur im eigenen Paket** sichtbar, auch nicht in Unterklassen anderer Pakete. `protected` erlaubt zusätzlich den Zugriff in Unterklassen, aber nicht in beliebigen Klassen anderer Pakete. Bei Frau Hubrich sind Attribute ohnehin immer private.' },
+      explain: 'Ohne Schlüsselwort (package-private) ist ein Attribut **nur im eigenen Paket** sichtbar, auch nicht in Unterklassen anderer Pakete. `protected` erlaubt zusätzlich den Zugriff in Unterklassen, aber nicht in beliebigen Klassen anderer Pakete. Im Kurs sind Attribute ohnehin immer private.' },
 
     { id: 'K90-T04-F12', sec: 'iface', type: 'multi', t: 'Welche Deklarationen sind möglich?',
       prompt: 'Gegeben `interface Konto2 { void abheben(double b); }`. Welche Zeilen **kompilieren**? (mehrere)',

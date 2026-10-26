@@ -110,7 +110,7 @@ if (o instanceof Girokonto) { Girokonto g = (Girokonto) o; ... }
 
 // neue Form: Pattern Matching
 if (o instanceof Girokonto g) { ... }</code></pre>
-<div class="box merke"><b>Regel von Frau Hubrich</b>instanceof (und der Vergleich von Class-Objekten) möglichst vermeiden. Wer es braucht, hat meist den Datentyp schlecht gewählt: besser Polymorphie oder Typparameter. Erlaubt nur, wenn der Code dadurch sonst nicht mögliche Verallgemeinerung gewinnt.</div>
+<div class="box merke"><b>Regel aus der Vorlesung</b>instanceof (und der Vergleich von Class-Objekten) möglichst vermeiden. Wer es braucht, hat meist den Datentyp schlecht gewählt: besser Polymorphie oder Typparameter. Erlaubt nur, wenn der Code dadurch sonst nicht mögliche Verallgemeinerung gewinnt.</div>
 
 <h2>Funktionale Interfaces und Lambdas</h2>
 <p>Ein <strong>funktionales Interface</strong> hat <strong>genau eine abstrakte Methode</strong> (default- und static-Methoden zählen nicht). Meist mit <code>@FunctionalInterface</code> annotiert, Pflicht ist das nicht. Eine abstrakte <strong>Klasse</strong> mit einer abstrakten Methode ist <strong>kein</strong> funktionales Interface.</p>

@@ -18,7 +18,7 @@ P3.serie({
   fragen: [
 
     { id: 'K90-T01-F01', sec: 'regeln', type: 'multi', t: 'Regelverstöße erkennen',
-      prompt: 'Welche Zeilen verstoßen gegen die Code-Regeln von Frau Hubrich? (mehrere)',
+      prompt: 'Welche Zeilen verstoßen gegen die Code-Regeln der Vorlesung? (mehrere)',
       options: [
         '`public double kontostand;` in der Klasse `Konto`',
         '`private static final int MAX_BETRAG = 2000;` in der Klasse `Sparbuch`',

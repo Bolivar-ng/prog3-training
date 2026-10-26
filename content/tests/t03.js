@@ -48,7 +48,7 @@ P3.serie({
         'alle Klassen im selben Package und alle Unterklassen'
       ],
       answer: 3,
-      explain: '`protected` = paketweit **plus** Unterklassen in anderen Packages. Es ist also offener als die Standard-Sichtbarkeit (ohne Schlüsselwort). Deshalb gilt bei Frau Hubrich: Attribute immer `private`, auch nicht `protected`.' },
+      explain: '`protected` = paketweit **plus** Unterklassen in anderen Packages. Es ist also offener als die Standard-Sichtbarkeit (ohne Schlüsselwort). Deshalb gilt im Kurs: Attribute immer `private`, auch nicht `protected`.' },
 
     { id: 'K90-T03-F04', sec: 'prog2', type: 'input', t: 'Integer-Cache',
       prompt: 'Was gibt das Programm aus? (drei Zeilen)',
@@ -124,7 +124,7 @@ System.out.println(l);`,
         { options: ['a.compareTo(b) >= 0', 'a > b', 'a.equals(b)', 'a.compareTo(b) < 0'], answer: 0,
           why: '`>` gibt es nur für primitive Zahlen. Positiv oder 0 heißt: a ist mindestens so groß wie b. Mit `< 0` würde das Minimum herauskommen.' }
       ],
-      explain: 'Mit Typparametern wäre der `Vergleicher` aus der Übung ohne `Object` und ohne instanceof ausgekommen. Darauf weist Frau Hubrich im Kommentar ausdrücklich hin („leider haben wir noch keine Typparameter kennengelernt“).' },
+      explain: 'Mit Typparametern wäre der `Vergleicher` aus der Übung ohne `Object` und ohne instanceof ausgekommen. Darauf weist der Kommentar im Vorlesungscode ausdrücklich hin („leider haben wir noch keine Typparameter kennengelernt“).' },
 
     { id: 'K90-T03-F10', sec: 'bank', type: 'input', t: 'static-Zähler',
       prompt: 'Was gibt das Programm aus? (eine Zeile)',
@@ -215,7 +215,7 @@ System.out.println(gebuehr(Kontoart.FESTGELD));`,
         '`mvn compile` mit `<mainClass>` im compiler-plugin'
       ],
       answer: 2,
-      explain: 'Beide Plugins starten eine Klasse mit `main`. `exec:java` läuft aber in der JVM von Maven und legt alles auf den Classpath. JavaFX ist seit Java 11 nicht mehr im JDK und braucht den Modulpfad, das erledigt das javafx-Plugin selbst. Darauf hat Frau Hubrich in der Übung hingewiesen. `<mainClass>` vollqualifiziert mit Punkten.' },
+      explain: 'Beide Plugins starten eine Klasse mit `main`. `exec:java` läuft aber in der JVM von Maven und legt alles auf den Classpath. JavaFX ist seit Java 11 nicht mehr im JDK und braucht den Modulpfad, das erledigt das javafx-Plugin selbst. Darauf wurde in der Übung hingewiesen. `<mainClass>` vollqualifiziert mit Punkten.' },
 
     { id: 'K90-T03-F16', sec: 'maven', type: 'mc', t: 'Assembly ohne eigene Datei',
       prompt: 'Wie schreibt man den Assembly-Descriptor für die Abgabe direkt in die pom, statt eine eigene Datei `src/assembly/abgabe.xml` anzulegen?',

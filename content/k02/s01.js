@@ -249,7 +249,7 @@ System.out.println(z instanceof Comparable);`,
         { text: 'Der Cast in Zeile 3 kann eine `ClassCastException` werfen.', correct: false,
           why: 'Vorher wurde mit instanceof geprüft, der Cast ist hier sicher. Er ist nur überflüssig.' }
       ],
-      explain: 'Frau Hubrichs Regel: instanceof möglichst vermeiden, lieber Polymorphie. Wenn es doch nötig ist, dann die neue Form mit Pattern Matching.' },
+      explain: 'Regel aus der Vorlesung: instanceof möglichst vermeiden, lieber Polymorphie. Wenn es doch nötig ist, dann die neue Form mit Pattern Matching.' },
 
     /* ========== Funktionale Interfaces & Lambda ========== */
 

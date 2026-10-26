@@ -179,7 +179,7 @@ public class TestKalender extends Kalender {
         { text: 'Das Package ist falsch — `TestKalender` gehört nach `bankprojekt.tests`, nicht `bankprojekt.nuetzliches`.', correct: true,
           why: '`TestKalender` ist Test-Infrastruktur und gehört in das Test-Source-Tree (`src/test/`). Im Produktions-Package würde sie ohne JUnit-Dependency kompiliert und ins JAR gepackt.' },
         { text: '`datum` ist package-private statt `private` — kein echter Bug, aber schlechter Stil.', correct: true,
-          why: 'Attribute sollen laut Hubrich-Konventionen `private` sein. Package-private ist hier kein Fehler, aber nicht regelkonform.' },
+          why: 'Attribute sollen laut den Kurs-Konventionen `private` sein. Package-private ist hier kein Fehler, aber nicht regelkonform.' },
         { text: '`setDatum` fehlt — damit kann der Test das Datum nicht weiterschalten.', correct: true,
           why: 'Ohne `setDatum` kann Test 8 nicht prüfen, ob das Datum bei einer fehlgeschlagenen Abhebung korrekt bleibt (zwei verschiedene Tage).' },
         { text: 'Der Konstruktor sollte `public` sein.', correct: false,

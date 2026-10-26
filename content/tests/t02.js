@@ -84,7 +84,7 @@ System.out.println("ok");`,
         '`NullPointerException` in Zeile 3'
       ],
       answer: 0,
-      explain: 'Der Compiler erlaubt den Cast, weil eine `Konto`-Variable grundsätzlich auf ein Girokonto zeigen **könnte**. Erst zur Laufzeit stellt die JVM fest, dass es ein Sparbuch ist. Deshalb verlangt Frau Hubrich: Down-Casts vermeiden.' },
+      explain: 'Der Compiler erlaubt den Cast, weil eine `Konto`-Variable grundsätzlich auf ein Girokonto zeigen **könnte**. Erst zur Laufzeit stellt die JVM fest, dass es ein Sparbuch ist. Deshalb gilt in der Vorlesung: Down-Casts vermeiden.' },
 
     { id: 'K90-T02-F05', sec: 'exc', type: 'input', t: 'try – catch – finally',
       prompt: 'Was gibt das Programm aus? (sieben Zeilen)',
@@ -128,7 +128,7 @@ System.out.println(liste.contains(anna));`,
       explain: '`equals(Kunde k)` **überlädt** `equals(Object)`, es überschreibt es nicht. Der direkte Aufruf mit einem `Kunde` findet die eigene Methode: `true`. `contains` ruft aber `equals(Object)` auf, also die Version von `Object` (Identität): `false`. Mit `@Override` hätte der Compiler den Fehler sofort gemeldet.' },
 
     { id: 'K90-T02-F07', sec: 'exc', type: 'bug', t: 'Exception-Unsinn',
-      prompt: 'Markiere alle Zeilen, die gegen die Exception-Regeln von Frau Hubrich verstoßen.',
+      prompt: 'Markiere alle Zeilen, die gegen die Exception-Regeln der Vorlesung verstoßen.',
       code: `/**
  * hebt den Betrag ab
  * @param betrag abzuhebender Betrag
