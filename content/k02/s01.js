@@ -6,7 +6,7 @@ P3.serie({
   kapitel: 'K02',
   titel: 'Interfaces: Grundlagen bis Lambda',
   beschreibung: 'Alles aus der Vorlesung zu Interfaces: verwenden, schreiben, die vier Wege, this, compareTo im Konto, instanceof und Lambda-Ausdrücke. Vorbereitung auf den Moodle-Test.',
-  neu: true,
+  neu: false,
   themen: [
     { id: 'grund',    name: 'Interface schreiben & verwenden' },
     { id: 'wege',     name: 'Die Wege der Implementierung' },

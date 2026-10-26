@@ -24,7 +24,7 @@ P3.kapitel([
     titel: 'Interfaces',
     beschreibung: 'Interfaces schreiben und verwenden, die Wege der Implementierung (innere, anonyme Klassen), this, compareTo, instanceof, funktionale Interfaces und Lambda-Ausdrücke.',
     zusammenfassung: true,
-    serien: ['s01']
+    serien: ['s01', 's02']
   },
   {
     id: 'K90',
