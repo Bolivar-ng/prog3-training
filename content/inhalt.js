@@ -33,6 +33,6 @@ P3.kapitel([
     titel: 'Probetests',
     beschreibung: 'Tests wie in der Prüfung, 30 bis 40 Minuten, Theorie und Praxis aus allen bisherigen Kapiteln plus Prog-2-Wiederholung.',
     zusammenfassung: false,
-    serien: ['t01', 't02', 't03', 't04']
+    serien: ['t01', 't02', 't03', 't04', 't05']
   }
 ]);
