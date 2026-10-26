@@ -561,3 +561,4 @@ legend { font-weight: 700; padding: 0 4px; }
 .btn.test { background: var(--test); border-color: var(--test); color: var(--on-test); }
 .nav a.nav-test { color: var(--test); font-weight: 700; }
 .nav a.nav-test:hover { background: var(--test-soft); }
+.tz-fehler { margin: -6px 0 16px; font-size: .9rem; color: var(--ink); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }

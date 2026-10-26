@@ -50,7 +50,11 @@
     });
     return { n: fragen.length, ok, bad, half, offen: fragen.length - ok - bad - half };
   }
-  const fehlerFragen = () => { const f = fortschritt.alle(); return alleFragen().filter(q => f[q.id] && f[q.id].last != null && f[q.id].last < 1); };
+  // Fragen aus dem Bereich Probetests werden bei Statistik und Fehlertraining getrennt gezählt
+  const istTestFrage = q => { const k = inhalt.kapitel.find(x => x.id === q.kapitel); return !!(k && istTestbereich(k)); };
+  const alleFehler = () => { const f = fortschritt.alle(); return alleFragen().filter(q => f[q.id] && f[q.id].last != null && f[q.id].last < 1); };
+  const fehlerFragen = () => alleFehler().filter(q => !istTestFrage(q));      // Fehlertraining = nur Kapitel
+  const testFehlerFragen = () => alleFehler().filter(istTestFrage);           // eigene Liste für die Probetests
   const gemerkteFragen = () => gemerkt.liste().map(id => inhalt.fragen.get(id)).filter(Boolean);
 
   function balken(st) {
@@ -207,14 +211,17 @@
   function viewStart() {
     navAktiv('');
     const alle = alleFragen();
-    const st = statistik(alle);
+    const kapitelFragen = alle.filter(q => !istTestFrage(q));
+    const testFragen = alle.filter(istTestFrage);
+    const st = statistik(kapitelFragen);
     const laufend = speicher.lesen('laufend', null);
     const kinder = [h('h1', { text: 'Programmieren 3 – Training' }),
       h('p', { class: 'lead' }, 'Pro Kapitel eine Zusammenfassung und mehrere Trainingsserien. ', h('strong', { text: 'Lernmodus' }), ': sofortige Rückmeldung nach jeder Antwort. ', h('strong', { text: 'Prüfungsmodus' }), ': mit Timer, Auflösung erst am Ende, mit Note.')];
     if (inhalt.fehler.length) kinder.push(h('div', { class: 'banner' }, h('span', {}, h('strong', { text: 'Ladefehler: ' }), inhalt.fehler.join(' · '))));
     if (laufend) kinder.push(laufendBanner(laufend));
     kinder.push(h('div', { class: 'stats' },
-      stat(st.n, 'Fragen insgesamt'), stat(st.ok, 'zuletzt richtig'), stat(st.bad + st.half, 'im Fehlertraining'),
+      stat(kapitelFragen.length, 'Kapitelfragen'), stat(st.ok, 'davon zuletzt richtig'), stat(st.bad + st.half, 'im Fehlertraining'),
+      stat(testFragen.length, 'Testfragen'),
       stat(gemerkt.liste().length, 'gemerkt'), stat(verlauf.liste().length, 'Prüfungen geschrieben')));
     kinder.push(h('h2', { text: 'Kapitel' }));
     kinder.push(h('div', { class: 'cards' }, inhalt.kapitel.filter(k => !istTestbereich(k)).map(k => {
@@ -228,7 +235,7 @@
     })));
     kinder.push(h('h2', { text: 'Gezielt üben' }));
     kinder.push(h('div', { class: 'cards' },
-      kachel('Fehlertraining', `${fehlerFragen().length} Fragen, die du zuletzt falsch oder nur teilweise hattest. Richtig beantwortet fallen sie heraus.`, '#/fehler', 'Starten'),
+      kachel('Fehlertraining', `${fehlerFragen().length} Fragen aus den Kapiteln, die du zuletzt falsch oder nur teilweise hattest. Richtig beantwortet fallen sie heraus.`, '#/fehler', 'Starten'),
       kachel('Gemerkt', `${gemerkt.liste().length} Fragen mit Stern.`, '#/gemerkt', 'Öffnen'),
       kachel('Große Prüfung', 'Zufällige Fragen aus mehreren Kapiteln, mit Timer und Note, wie eine Klausur.', '#/grosse-pruefung', 'Einrichten'),
       kachel('Verlauf', 'Alle geschriebenen Prüfungen mit Punkten und Note, jederzeit nachlesbar.', '#/verlauf', 'Ansehen')));
@@ -255,6 +262,13 @@
     return `${versuche.length}× geschrieben · beste: ${P3.zahl(beste)} % (Note ${P3.note(beste)})`;
   }
 
+  function testFehlerZeile() {
+    const n = testFehlerFragen().length;
+    return h('p', { class: 'tz-fehler' },
+      n ? `${n} Testfragen zuletzt falsch oder teilweise (getrennt vom Fehlertraining der Kapitel). ` : 'Keine offenen Fehler aus den Probetests.',
+      n ? h('a', { class: 'btn ghost small', href: '#/lernen/fehler-tests', text: 'Testfehler üben' }) : null);
+  }
+
   function testzone(liste) {
     const karten = liste.flatMap(k => serienVon(k.id)).map(s => {
       const best = besterVersuch(s.id);
@@ -271,6 +285,7 @@
       h('span', { class: 'tz-badge', text: 'Probetests' }),
       h('h2', { id: 'tz-titel', text: 'Probetests: wie im echten Test' }),
       h('p', { class: 'tz-lead', text: 'Feste Zeit, keine Rückmeldung bis zur Abgabe, danach Auswertung mit Note. Stoff aus allen bisherigen Kapiteln und Wiederholung aus Prog 2.' }),
+      testFehlerZeile(),
       h('div', { class: 'cards' }, karten));
   }
 
@@ -349,6 +364,7 @@
   function fragenSet(quelle) {
     if (quelle === 'gemerkt') return { titel: 'Gemerkte Fragen', fragen: gemerkteFragen(), zurueck: '#/', gruppen: 'serie' };
     if (quelle === 'fehler') return { titel: 'Fehlertraining', fragen: fehlerFragen(), zurueck: '#/', gruppen: 'serie' };
+    if (quelle === 'fehler-tests') return { titel: 'Fehler aus den Probetests', fragen: testFehlerFragen(), zurueck: '#/', gruppen: 'serie' };
     const s = inhalt.serien.get(quelle);
     if (s) return { titel: s.titel, serie: s, fragen: s.fragen, zurueck: '#/k/' + s.kapitel, gruppen: 'thema' };
     const k = inhalt.kapitel.find(x => x.id === quelle);
@@ -373,7 +389,7 @@
     navAktiv(quelle === 'gemerkt' ? 'gemerkt' : quelle === 'fehler' ? 'fehler' : null);
     if (!set.fragen.length) {
       return seite(set.titel, h('h1', { text: set.titel }),
-        h('p', { class: 'empty-state', text: quelle === 'gemerkt' ? 'Noch nichts gemerkt. Markiere Fragen mit ☆ merken.' : quelle === 'fehler' ? 'Keine offenen Fehler. Stark! Neue Fehler landen automatisch hier.' : 'Diese Serie hat keine Fragen.' }),
+        h('p', { class: 'empty-state', text: quelle === 'gemerkt' ? 'Noch nichts gemerkt. Markiere Fragen mit ☆ merken.' : quelle === 'fehler' || quelle === 'fehler-tests' ? 'Keine offenen Fehler. Stark! Neue Fehler landen automatisch hier.' : 'Diese Serie hat keine Fragen.' }),
         h('a', { class: 'btn ghost', href: '#/', text: 'Zur Startseite' }));
     }
     const gruppen = gruppenVon(set);
