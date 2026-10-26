@@ -44,7 +44,7 @@ Neues Kapitel: Eintrag in `content/inhalt.js` anhängen, Ordner `content/k01/` m
 
 ## Probetests
 
-Kapitel `K90` mit `bereich: 'tests'` (Ordner `content/tests/`, Dateien `t01.js`, `t02.js` …) erscheint nicht in der Kapitelliste, sondern als eigener, orange markierter Bereich ganz oben auf der Startseite. Jede Test-Serie hat `dauer` (Minuten): Das ist die feste Zeit im Prüfungsmodus. Ein Probetest mischt Theorie und Praxis aus allen bisherigen Kapiteln; bei mc-Fragen darf die richtige Antwort weder auffällig oft die längste Option noch immer an derselben Position sein.
+Kapitel `K90` mit `bereich: 'tests'` (Ordner `content/tests/`, Dateien `t01.js`, `t02.js` …) erscheint nicht in der Kapitelliste, sondern als eigener, orange markierter Bereich ganz unten auf der Startseite (unter Kapitel und Gezielt üben). Jede Test-Serie hat `dauer` (Minuten): Das ist die feste Zeit im Prüfungsmodus. Ein Probetest mischt Theorie und Praxis aus allen bisherigen Kapiteln; bei mc-Fragen darf die richtige Antwort weder auffällig oft die längste Option noch immer an derselben Position sein.
 
 ## Feste IDs: die wichtigste Regel
 

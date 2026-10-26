@@ -216,8 +216,6 @@
     kinder.push(h('div', { class: 'stats' },
       stat(st.n, 'Fragen insgesamt'), stat(st.ok, 'zuletzt richtig'), stat(st.bad + st.half, 'im Fehlertraining'),
       stat(gemerkt.liste().length, 'gemerkt'), stat(verlauf.liste().length, 'Prüfungen geschrieben')));
-    const testKapitel = inhalt.kapitel.filter(istTestbereich);
-    if (testKapitel.length) kinder.push(testzone(testKapitel));
     kinder.push(h('h2', { text: 'Kapitel' }));
     kinder.push(h('div', { class: 'cards' }, inhalt.kapitel.filter(k => !istTestbereich(k)).map(k => {
       const fr = fragenVon(k.id);
@@ -234,6 +232,9 @@
       kachel('Gemerkt', `${gemerkt.liste().length} Fragen mit Stern.`, '#/gemerkt', 'Öffnen'),
       kachel('Große Prüfung', 'Zufällige Fragen aus mehreren Kapiteln, mit Timer und Note, wie eine Klausur.', '#/grosse-pruefung', 'Einrichten'),
       kachel('Verlauf', 'Alle geschriebenen Prüfungen mit Punkten und Note, jederzeit nachlesbar.', '#/verlauf', 'Ansehen')));
+    // Probetests ganz unten: Kapitel und gezieltes Üben stehen im Vordergrund
+    const testKapitel = inhalt.kapitel.filter(istTestbereich);
+    if (testKapitel.length) kinder.push(testzone(testKapitel));
     seite('', ...kinder);
   }
   /* Bereich „Probetests“: eigene Farbe, jeder Test direkt startbar */
