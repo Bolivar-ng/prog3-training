@@ -242,6 +242,7 @@ h2 { font-size: 1.2rem; margin: 32px 0 8px; }
 .q-head { display: flex; gap: 10px; align-items: center; font-size: .85rem; color: var(--muted); flex-wrap: wrap; }
 .q-num { font-weight: 700; color: var(--teal); font-variant-numeric: tabular-nums; }
 .q-kind { padding: 1px 8px; border-radius: 999px; background: var(--teal-soft); color: var(--teal); font-weight: 700; font-size: .78rem; }
+.q-wichtig { padding: 1px 8px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); font-weight: 700; font-size: .78rem; }
 .q-id { font-family: 'JetBrains Mono', monospace; font-size: .75rem; }
 .q-last { font-size: .78rem; font-weight: 700; padding: 1px 8px; border-radius: 99px; }
 .q-last.ok { background: var(--ok-soft); color: var(--ok); }

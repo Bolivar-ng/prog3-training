@@ -70,7 +70,7 @@ P3.serie({
 });
 ```
 
-Gemeinsame Felder jeder Frage: `id`, `sec` (Themen-ID), `type`, `t` (kurzer Titel), `prompt` (Frage), optional `code`, `explain` (Erklärung nach der Auflösung), `kind` (eigene Typ-Beschriftung), `minuten` (eigene Zeit im Prüfungsmodus).
+Gemeinsame Felder jeder Frage: `id`, `sec` (Themen-ID), `type`, `t` (kurzer Titel), `prompt` (Frage), optional `code`, `explain` (Erklärung nach der Auflösung), `kind` (eigene Typ-Beschriftung), `minuten` (eigene Zeit im Prüfungsmodus), `wichtig: true` (Etikett „prüfungsrelevant“).
 
 In `prompt`, `options`, `explain` usw. wird `` `Code` `` als Code und `**fett**` fett dargestellt.
 

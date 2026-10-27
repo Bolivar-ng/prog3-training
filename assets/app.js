@@ -75,6 +75,7 @@
     const head = h('div', { class: 'q-head' },
       h('span', { class: 'q-num', text: String(opt.nummer) }),
       h('span', { class: 'q-kind', text: P3.typLabel(q) }),
+      q.wichtig ? h('span', { class: 'q-wichtig', title: 'Thema kommt in Prüfungen vor', text: 'prüfungsrelevant' }) : null,
       h('span', { class: 'q-id', text: q.id }));
     if (modus === 'lernen') {
       const e = fortschritt.von(q.id);

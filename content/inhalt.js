@@ -27,6 +27,14 @@ P3.kapitel([
     serien: ['s01', 's02']
   },
   {
+    id: 'K03',
+    ordner: 'k03',
+    titel: 'Enums und Records',
+    beschreibung: 'Enums als abgeschlossene Konstantensammlungen mit Attributen und Methoden, geschenkte Methoden, Vergleich mit ==, Records mit kompaktem Konstruktor und flacher Unveränderlichkeit.',
+    zusammenfassung: true,
+    serien: ['s01', 's02']
+  },
+  {
     id: 'K90',
     ordner: 'tests',
     bereich: 'tests',              // eigener Bereich „Probetests“ oben auf der Startseite
