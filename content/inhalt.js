@@ -32,7 +32,7 @@ P3.kapitel([
     titel: 'Enums und Records',
     beschreibung: 'Enums als abgeschlossene Konstantensammlungen mit Attributen und Methoden, geschenkte Methoden, Vergleich mit ==, Records mit kompaktem Konstruktor und flacher Unveränderlichkeit.',
     zusammenfassung: true,
-    serien: ['s01', 's02']
+    serien: ['s01', 's02', 's03']
   },
   {
     id: 'K90',
@@ -41,6 +41,6 @@ P3.kapitel([
     titel: 'Probetests',
     beschreibung: 'Tests wie in der Prüfung, 30 bis 40 Minuten, Theorie und Praxis aus allen bisherigen Kapiteln plus Prog-2-Wiederholung.',
     zusammenfassung: false,
-    serien: ['t01', 't02', 't03', 't04', 't05']
+    serien: ['t01', 't02', 't03', 't04', 't05', 't06']
   }
 ]);
