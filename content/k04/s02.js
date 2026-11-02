@@ -201,7 +201,7 @@ try {
         'Die Methoden mit `List` gibt es zusätzlich überladen für `Set`, nur nicht in der Doku.',
         'Wo die Reihenfolge der Elemente zählt, braucht man eine List, sonst reicht jede Collection.',
         'Ein Tippfehler in der Dokumentation, gemeint ist überall die Hilfsklasse `Collections`.',
-        '`Collection` ist neuer als `List`, die alten Methoden wurden nie umgestellt.'
+        '`Collection` ist neuer als `List`, und die alten Methoden wurden aus Kompatibilitätsgründen nie umgestellt.'
       ],
       answer: 1,
       explain: 'Sortieren, Umdrehen, Mischen und positionsgenaues Kopieren arbeiten mit **Positionen**, die ein Set nicht hat. Minimum, Maximum, Häufigkeit und gemeinsame Elemente hängen nicht von der Reihenfolge ab, darum reicht der allgemeinste Typ, und man kann auch ein Set übergeben. Prinzip: Parameter so allgemein wie möglich, so speziell wie nötig. `Collections.sort(meinSet)` ist ein Compilerfehler.' }
