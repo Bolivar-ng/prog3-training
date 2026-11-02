@@ -35,6 +35,14 @@ P3.kapitel([
     serien: ['s01', 's02', 's03']
   },
   {
+    id: 'K04',
+    ordner: 'k04',
+    titel: 'Collections',
+    beschreibung: 'Generische Klassen richtig benutzen, List, Set und Map mit ihren Klassen, for-each und Iterator, HashSet gegen TreeSet, Sichten auf Maps und die Hilfsklasse Collections.',
+    zusammenfassung: true,
+    serien: ['s01', 's02']
+  },
+  {
     id: 'K90',
     ordner: 'tests',
     bereich: 'tests',              // eigener Bereich „Probetests“ oben auf der Startseite
