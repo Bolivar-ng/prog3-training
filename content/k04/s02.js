@@ -193,6 +193,17 @@ try {
 
     { id: 'K04-S02-F14', sec: 'hilfe', type: 'explain', t: 'Collection oder Collections?',
       prompt: 'Erkläre den Unterschied zwischen `Collection` und `Collections` und nenne zu beiden ein Beispiel.',
-      model: '`Collection<E>` ist ein **Interface**: das Ober-Interface von `List` und `Set` mit Methoden wie `add`, `remove`, `contains`, `size`, `removeIf`. Beispiel: `Collection<String> c = new HashSet<>();`. `Collections` (mit s) ist eine **Hilfsklasse** mit ausschließlich statischen Methoden, die mit Collections arbeiten, z. B. `Collections.sort(liste)`, `Collections.max(c)`, `Collections.frequency(c, o)` oder `Collections.unmodifiableList(liste)`. Von `Collections` erzeugt man keine Objekte. (Map gehört übrigens zu keinem von beiden, sie erbt nicht von Collection.)' }
+      model: '`Collection<E>` ist ein **Interface**: das Ober-Interface von `List` und `Set` mit Methoden wie `add`, `remove`, `contains`, `size`, `removeIf`. Beispiel: `Collection<String> c = new HashSet<>();`. `Collections` (mit s) ist eine **Hilfsklasse** mit ausschließlich statischen Methoden, die mit Collections arbeiten, z. B. `Collections.sort(liste)`, `Collections.max(c)`, `Collections.frequency(c, o)` oder `Collections.unmodifiableList(liste)`. Von `Collections` erzeugt man keine Objekte. (Map gehört übrigens zu keinem von beiden, sie erbt nicht von Collection.)' },
+
+    { id: 'K04-S02-F15', sec: 'hilfe', type: 'mc', wichtig: true, t: 'List oder Collection als Parameter?',
+      prompt: 'In der Hilfsklasse `Collections` erwarten `sort`, `reverse`, `shuffle` und `copy` eine `List`, `min`, `max`, `frequency` und `disjoint` dagegen eine `Collection`. Woran liegt das?',
+      options: [
+        'Die Methoden mit `List` gibt es zusätzlich überladen für `Set`, nur nicht in der Doku.',
+        'Wo die Reihenfolge der Elemente zählt, braucht man eine List, sonst reicht jede Collection.',
+        'Ein Tippfehler in der Dokumentation, gemeint ist überall die Hilfsklasse `Collections`.',
+        '`Collection` ist neuer als `List`, die alten Methoden wurden nie umgestellt.'
+      ],
+      answer: 1,
+      explain: 'Sortieren, Umdrehen, Mischen und positionsgenaues Kopieren arbeiten mit **Positionen**, die ein Set nicht hat. Minimum, Maximum, Häufigkeit und gemeinsame Elemente hängen nicht von der Reihenfolge ab, darum reicht der allgemeinste Typ, und man kann auch ein Set übergeben. Prinzip: Parameter so allgemein wie möglich, so speziell wie nötig. `Collections.sort(meinSet)` ist ein Compilerfehler.' }
   ]
 });
