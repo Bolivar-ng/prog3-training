@@ -40,7 +40,7 @@ P3.kapitel([
     titel: 'Collections',
     beschreibung: 'Generische Klassen richtig benutzen, List, Set und Map mit ihren Klassen, for-each und Iterator, HashSet gegen TreeSet, Sichten auf Maps und die Hilfsklasse Collections.',
     zusammenfassung: true,
-    serien: ['s01', 's02']
+    serien: ['s01', 's02', 's03']
   },
   {
     id: 'K90',
@@ -49,6 +49,6 @@ P3.kapitel([
     titel: 'Probetests',
     beschreibung: 'Tests wie in der Prüfung, 30 bis 40 Minuten, Theorie und Praxis aus allen bisherigen Kapiteln plus Prog-2-Wiederholung.',
     zusammenfassung: false,
-    serien: ['t01', 't02', 't03', 't04', 't05', 't06']
+    serien: ['t01', 't02', 't03', 't04', 't05', 't06', 't07']
   }
 ]);
