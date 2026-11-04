@@ -86,40 +86,36 @@ public class Test {
       answers: ['Geldbetrag[betrag=10.01, waehrung=EUR]\nGeldbetrag[betrag=12.01, waehrung=EUR]\n738.62\ntrue'],
       explain: 'Der kompakte Konstruktor rundet 10,005 auf 10.01. `e.plus(m)`: 123 Ден sind 123 / 61,5 = 2 €, das Ergebnis bleibt in der Währung von `e`: 12.01 €. `m.plus(e)`: 10,01 € sind 615,615 → gerundet 615.62 Ден, plus 123 = 738.62 Ден. Das erzeugte `equals` vergleicht Betrag **und** Währung: beide gleich, also `true`.' },
 
-    { id: 'K03-S03-F03', sec: 'geld', type: 'mc', t: 'equals und hashCode im Record',
-      prompt: 'Die alte Klasse `Geldbetrag` hatte eigene `equals`- und `hashCode`-Methoden, die nur den Betrag verglichen. Was macht man damit beim Umbau zum Record mit Betrag und Währung?',
+    { id: 'K03-S03-F03', sec: 'geld', type: 'mc', t: 'equals und hashCode nach dem Wert',
+      prompt: '`Geldbetrag` ist ein Record mit Betrag und Währung. Fachlich sollen 1,00 € und 61,50 MKD **gleich** sein, weil sie gleich viel wert sind. Was muss man tun?',
       options: [
-        'Man behält beide, sonst ändert sich die Schnittstelle der Klasse.',
-        'Man behält `equals`, löscht aber `hashCode`, das erzeugt der Record.',
-        'Man löscht beide, der Record erzeugt sie über Betrag und Währung.',
-        'Man löscht beide, danach gibt es kein `equals` mehr außer dem von Object.'
+        'Nichts, der Record erzeugt `equals` und `hashCode` schon passend.',
+        'Nur `equals` überschreiben, denn `hashCode` erzeugt der Record weiterhin passend dazu.',
+        '`equals` und `hashCode` überschreiben, beide auf Grundlage des Werts in Euro.',
+        'Nur `compareTo` anpassen, `equals` und `hashCode` richten sich danach.'
       ],
       answer: 2,
-      explain: 'Der Record erzeugt `equals` und `hashCode` über **alle** Komponenten. Genau das ist richtig: 100 € und 100 Ден sind verschieden. Die Schnittstelle bleibt gleich, die Methoden existieren weiter, nur vom Compiler erzeugt. Die alten Versionen hätten die Währung ignoriert.' },
+      explain: 'Das erzeugte `equals` vergleicht **alle** Komponenten, also auch die Währung: 1 € und 61,50 MKD wären verschieden. Für „gleich viel wert = gleich“ muss man `equals` selbst schreiben, und dann **immer auch** `hashCode`: Gleiche Objekte müssen denselben Hashcode haben, sonst findet ein HashSet sie nicht. Beide stützen sich am besten auf dieselbe Euro-Umrechnung wie `compareTo`, dann ist alles konsistent. `compareTo` beeinflusst `equals` nicht.' },
 
     { id: 'K03-S03-F04', sec: 'geld', type: 'trace', t: 'compareTo über Währungen',
-      prompt: '`compareTo` vergleicht bei verschiedenen Währungen den Wert in Euro und bei Gleichstand die Reihenfolge der Währungen in der Enum (EUR vor MKD). Trage das **Vorzeichen** des Ergebnisses ein: `negativ`, `0` oder `positiv`.',
-      code: `public int compareTo(Geldbetrag o) {
-    if (this.waehrung == o.waehrung)
-        return Double.compare(this.betrag, o.betrag);
-    int ergebnis = Double.compare(this.betrag / this.waehrung.getKurs(),
-                                  o.betrag / o.waehrung.getKurs());
-    if (ergebnis != 0)
-        return ergebnis;
-    return this.waehrung.compareTo(o.waehrung);
+      prompt: '`compareTo` rechnet beide Beträge mit der vorhandenen Methode der Währung in Euro um (auf Cent gerundet) und vergleicht die Euro-Werte. Trage das **Vorzeichen** des Ergebnisses ein: `negativ`, `0` oder `positiv`.',
+      code: `private double inEuro() {
+    return this.waehrung.waehrungInEuroUmrechnen(this.betrag);   // round(betrag / kurs, 2)
+}
+
+public int compareTo(Geldbetrag o) {
+    return Double.compare(this.inEuro(), o.inEuro());
 }
 // Kurse: EUR = 1, MKD = 61.5`,
       columns: ['Vorzeichen'],
       rows: [
-        { label: '100 € mit 6150 Ден', values: [['negativ', 'Negativ', '-', '<0', '-1']] },
-        { label: '6150 Ден mit 100 €', values: [['positiv', 'Positiv', '+', '>0', '1']] },
+        { label: '100 € mit 6150 Ден', values: [['0']] },
+        { label: '6150 Ден mit 100 €', values: [['0']] },
         { label: '50 € mit 6150 Ден', values: [['negativ', 'Negativ', '-', '<0', '-1']] },
         { label: '200 Ден mit 3 €', values: [['positiv', 'Positiv', '+', '>0', '1']] },
         { label: '7 € mit 7.00 €', values: [['0']] }
       ],
-      explain: '100 € und 6150 Ден sind gleich viel wert (6150 / 61,5 = 100). Darum entscheidet die Enum-Reihenfolge: EUR steht vor MKD, also negativ, umgekehrt positiv. So liefert `compareTo` nur bei gleichem Betrag **und** gleicher Währung 0, konsistent mit `equals`. 200 Ден sind ≈ 3,25 € und damit mehr als 3 €.' },
-
-    /* ========== Währungswechsel im Konto ========== */
+      explain: '6150 / 61,5 = 100,00 €: gleich viel wert, also 0, egal in welcher Reihenfolge. Die Währung selbst spielt keine Rolle. 200 Ден sind 3,25 € und damit mehr als 3 €. Die Rundung auf Cent sorgt dafür, dass winzige Rechenungenauigkeiten von `double` zwei gleich viel werte Beträge nicht „verschieden“ machen.' },
 
     { id: 'K03-S03-F05', sec: 'konto', type: 'bug', t: 'Währungswechsel mit Fehlern',
       prompt: 'Der Code kompiliert, rechnet aber falsch. Markiere die beiden Zeilen mit dem **logischen** Fehler.',
@@ -287,8 +283,8 @@ public class Test {
       answer: [0, 2, 3, 4],
       explain: 'Ein Import, der nicht mit `java.` beginnt und „cannot be resolved“ meldet, deutet fast immer auf eine fehlende Dependency. Maven lädt die jar selbst herunter. Der Scope `test` macht die Bibliothek nur für `src/test/java` sichtbar, die Enum liegt aber im Hauptcode. `import static` holt die statischen Methoden wie `round` ohne Klassennamen, mit dem Fehler hat das nichts zu tun.' },
 
-    { id: 'K03-S03-F15', sec: 'geld', type: 'explain', t: 'Warum nie 0 bei verschiedener Währung?',
-      prompt: '100 € und 6150 Ден sind gleich viel wert. Warum darf `compareTo` für diese beiden Geldbeträge trotzdem **nicht** 0 liefern? Was könnte sonst schiefgehen?',
-      model: '`compareTo` muss konsistent mit `equals` sein: 0 genau dann, wenn `equals` true liefert. Das erzeugte `equals` des Records vergleicht Betrag **und** Währung, für 100 € und 6150 Ден also `false`. Lieferte `compareTo` 0, wären sie für sortierte Strukturen (z. B. `TreeSet`, `TreeMap`) gleich, für Hash-Strukturen und `equals` verschieden. Ein `TreeSet` würde den zweiten Betrag nicht aufnehmen, ein `HashSet` schon. Darum entscheidet bei gleichem Wert die Währung, z. B. über die Reihenfolge in der Enum (`waehrung.compareTo(o.waehrung)`).' }
+    { id: 'K03-S03-F15', sec: 'geld', type: 'explain', t: 'Gleich viel wert, also gleich',
+      prompt: '`compareTo` liefert für 100 € und 6150 Ден **0**, weil beide gleich viel wert sind. Was folgt daraus für `equals` und `hashCode` des Records, und warum?',
+      model: '`compareTo` sollte konsistent mit `equals` sein: 0 genau dann, wenn `equals` true liefert. Das vom Record erzeugte `equals` vergleicht aber Betrag **und** Währung und hielte 100 € und 6150 Ден für verschieden. Dann würde ein `TreeSet` (benutzt `compareTo`) nur einen der beiden aufnehmen, ein `HashSet` (benutzt `equals`/`hashCode`) beide. Darum überschreibt man `equals` so, dass es die Euro-Werte vergleicht, und `hashCode` so, dass es aus dem Euro-Wert berechnet wird, denn gleiche Objekte müssen gleiche Hashcodes haben. Alle drei stützen sich auf dieselbe Umrechnung (z. B. eine private Methode `inEuro()`).' }
   ]
 });
