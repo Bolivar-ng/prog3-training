@@ -53,6 +53,13 @@ function pruefeSerie(s, k, sname) {
   if (s.dauer != null && !(Number.isInteger(s.dauer) && s.dauer >= 5)) fehler.push(`${wo}: dauer muss eine ganze Minutenzahl >= 5 sein`);
   if (!Array.isArray(s.fragen) || !s.fragen.length) { fehler.push(`${wo}: keine Fragen`); return; }
   const themen = new Set((s.themen || []).map(t => t.id));
+  const faelle = new Set();
+  (s.faelle || []).forEach(f => {
+    if (!f.id || !f.titel || !f.text) fehler.push(`${wo}: Fall braucht id, titel und text`);
+    if (faelle.has(f.id)) fehler.push(`${wo}: Fall ${f.id} doppelt`);
+    faelle.add(f.id);
+  });
+  const benutzt = new Set();
   s.fragen.forEach(q => {
     anzahl++;
     const w = `${q.id || '(ohne id)'}`;
@@ -64,6 +71,8 @@ function pruefeSerie(s, k, sname) {
     proTyp[q.type] = (proTyp[q.type] || 0) + 1;
     if (!q.sec || !themen.has(q.sec)) F(`Thema "${q.sec}" nicht in themen`);
     if (!q.prompt) F('prompt fehlt');
+    if (q.fall != null) { if (!faelle.has(q.fall)) F(`Fall "${q.fall}" nicht in faelle`); benutzt.add(q.fall); }
+    if (q.modelCode != null && typeof q.modelCode !== 'string') F('modelCode muss ein String sein');
     const codeZeilen = q.code ? q.code.split('\n').length : 0;
     const idx = (i, n) => Number.isInteger(i) && i >= 0 && i < n;
     switch (q.type) {
@@ -119,6 +128,7 @@ function pruefeSerie(s, k, sname) {
     }
     if (q.prompt && (q.prompt.split('`').length % 2 === 0)) warn.push(`${w}: ungerade Anzahl Backticks im prompt`);
   });
+  faelle.forEach(f => { if (!benutzt.has(f)) warn.push(`${wo}: Fall ${f} wird von keiner Frage benutzt`); });
 }
 
 console.log(`Kapitel: ${kapitel.length} · Serien: ${serien.length} · Fragen: ${anzahl}`);

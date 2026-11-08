@@ -563,3 +563,11 @@ legend { font-weight: 700; padding: 0 4px; }
 .nav a.nav-test { color: var(--test); font-weight: 700; }
 .nav a.nav-test:hover { background: var(--test-soft); }
 .tz-fehler { margin: -6px 0 16px; font-size: .9rem; color: var(--ink); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* Fallaufgaben: gemeinsame Ausgangslage */
+.fall { border: 1px solid var(--rule); border-left: 4px solid var(--warn); border-radius: 8px; padding: 6px 14px; margin: 4px 0 14px; background: var(--warn-soft); }
+.fall > summary { cursor: pointer; font-weight: 700; padding: 4px 0; }
+.fall-tag { color: var(--warn); }
+.fall-hint { color: var(--muted); font-weight: 400; font-size: .88rem; }
+.fall > p { max-width: 75ch; margin: 6px 0; white-space: pre-line; }
+.fall .code { margin-top: 8px; }

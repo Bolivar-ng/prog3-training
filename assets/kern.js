@@ -24,7 +24,15 @@ window.P3 = (function () {
       return;
     }
     s.themen = s.themen || [];
+    const faelle = new Map((s.faelle || []).map(f => [f.id, f]));
+    const gesehen = new Set();
     s.fragen.forEach((q, i) => {
+      if (q.fall) {
+        // Fallaufgabe: gemeinsame Ausgangslage mehrerer Teilaufgaben
+        q.fallDaten = faelle.get(q.fall) || null;
+        q.fallErste = !gesehen.has(q.fall);
+        gesehen.add(q.fall);
+      }
       q.serie = s.id;
       q.kapitel = s.kapitel;
       q.pos = i + 1;

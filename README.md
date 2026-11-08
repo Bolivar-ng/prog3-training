@@ -70,7 +70,18 @@ P3.serie({
 });
 ```
 
-Gemeinsame Felder jeder Frage: `id`, `sec` (Themen-ID), `type`, `t` (kurzer Titel), `prompt` (Frage), optional `code`, `explain` (Erklärung nach der Auflösung), `kind` (eigene Typ-Beschriftung), `minuten` (eigene Zeit im Prüfungsmodus), `wichtig: true` (Etikett „prüfungsrelevant“).
+Gemeinsame Felder jeder Frage: `id`, `sec` (Themen-ID), `type`, `t` (kurzer Titel), `prompt` (Frage), optional `code`, `explain` (Erklärung nach der Auflösung), `kind` (eigene Typ-Beschriftung), `minuten` (eigene Zeit im Prüfungsmodus), `wichtig: true` (Etikett „prüfungsrelevant“), `fall` (gehört zu einer Fallaufgabe, siehe unten), `modelCode` (Musterlösung als Code, angezeigt unter `model`).
+
+### Fallaufgaben
+
+Mehrere Teilaufgaben können eine gemeinsame **Ausgangslage** haben (Text, was gebaut werden soll, plus vorgegebener Code). Dafür in der Serie `faelle` angeben und in jeder Teilaufgabe `fall` setzen:
+
+```js
+faelle: [{ id: 'A', titel: 'Bibliothek', text: 'Beschreibung … (Leerzeile = neuer Absatz)', code: 'vorgegebener Code' }],
+fragen: [{ id: 'K04-S04-F01', fall: 'A', type: 'fill', … }]
+```
+
+Die Ausgangslage erscheint aufklappbar über der Frage, bei der ersten Teilaufgabe eines Falls offen. „Code schreiben“ und „JUnit-Test schreiben“ sind `explain`-Fragen mit `kind`, `model` (Kernpunkte) und `modelCode`.
 
 In `prompt`, `options`, `explain` usw. wird `` `Code` `` als Code und `**fett**` fett dargestellt.
 

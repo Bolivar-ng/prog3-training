@@ -66,6 +66,18 @@
       h('div', { class: 'barlabel', text: `${st.ok} von ${st.n} zuletzt richtig · ${st.bad + st.half} falsch · ${st.offen} noch nie beantwortet` }));
   }
 
+  /* Ausgangslage einer Fallaufgabe: aufklappbar, bei der ersten Teilaufgabe offen */
+  function fallBox(q) {
+    const f = q.fallDaten;
+    const box = h('details', { class: 'fall' });
+    if (q.fallErste) box.open = true;
+    box.append(h('summary', {}, h('span', { class: 'fall-tag', text: 'Fallaufgabe ' + f.id }), ' ', h('span', { text: f.titel || '' }),
+      h('span', { class: 'fall-hint', text: ' · Ausgangslage' })));
+    (f.text || '').split(/\n\s*\n/).forEach(abs => { if (abs.trim()) box.append(h('p', {}, rich(abs.trim()))); });
+    if (f.code) box.append(P3.codeView(f.code));
+    return box;
+  }
+
   /* ================= Frage-Karte (für alle Modi) =================
      modus: 'lernen' | 'pruefung' | 'auswertung'
      opt: { nummer, antwort, punkte, onBuchung(q, p), onAenderung(q, r), onSelbst(q, p) } */
@@ -96,6 +108,7 @@
     head.append(tools);
     art.append(head);
     if (q.t) art.append(h('p', { class: 'q-title', text: q.t }));
+    if (q.fallDaten) art.append(fallBox(q));
     art.append(h('p', { class: 'q-prompt' }, rich(q.prompt)));
 
     // Notiz
@@ -133,6 +146,7 @@
       if (extra) teile.push(extra);
       if (q.explain) teile.push(h('p', {}, rich(q.explain)));
       if (q.model) teile.push(h('p', { class: 'fb-verdict', text: 'Musterlösung' }), h('p', { class: 'model' }, rich(q.model)));
+      if (q.modelCode) teile.push(P3.codeView(q.modelCode));
       fb.replaceChildren(...teile);
 
       const setzeUrteil = p => {
