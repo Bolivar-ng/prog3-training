@@ -43,12 +43,20 @@ P3.kapitel([
     serien: ['s01', 's02', 's03', 's04']
   },
   {
+    id: 'K05',
+    ordner: 'k05',
+    titel: 'Generische Klassen',
+    beschreibung: 'Generische Klassen und Methoden selbst schreiben, Aufruf und Inferenz, Wildcard ?, Upper und Lower Bounds, die Faustregel extends/super, Comparable<? super T> und was mit Typparametern verboten ist.',
+    zusammenfassung: true,
+    serien: ['s01', 's02', 's03']
+  },
+  {
     id: 'K90',
     ordner: 'tests',
     bereich: 'tests',              // eigener Bereich „Probetests“ oben auf der Startseite
     titel: 'Probetests',
     beschreibung: 'Tests wie in der Prüfung, 30 bis 40 Minuten, Theorie und Praxis aus allen bisherigen Kapiteln plus Prog-2-Wiederholung.',
     zusammenfassung: false,
-    serien: ['t01', 't02', 't03', 't04', 't05', 't06', 't07', 't08']
+    serien: ['t01', 't02', 't03', 't04', 't05', 't06', 't07', 't08', 't09']
   }
 ]);
