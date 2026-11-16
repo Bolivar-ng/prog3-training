@@ -51,6 +51,14 @@ P3.kapitel([
     serien: ['s01', 's02', 's03']
   },
   {
+    id: 'K06',
+    ordner: 'k06',
+    titel: 'Mocking mit Mockito',
+    beschreibung: 'Klassen unabhängig voneinander testen: Mock-Objekte erzeugen und einrichten, Aufrufe verifizieren, ArgumentMatchers und ArgumentCaptor, Reihenfolge und Dependency Injection.',
+    zusammenfassung: true,
+    serien: ['s01', 's02']
+  },
+  {
     id: 'K90',
     ordner: 'tests',
     bereich: 'tests',              // eigener Bereich „Probetests“ oben auf der Startseite
