@@ -120,7 +120,7 @@ void getStandLiefertStandDesKontos() {
         'Nach dem Übertragen hat das Ziel-Mock einen um die Punkte höheren Stand.'
       ],
       answer: [0, 1, 2, 3, 4],
-      explain: 'Jeder Zweig der Methode braucht einen Test. Die letzte Option ist der typische Denkfehler: Ein Mock hat **keinen echten Stand**, `getStand()` liefert weiter, was eingerichtet wurde (sonst 0). Statt der Auswirkung prüft man den **Aufruf**: `verify(nach).gutschreiben(30)`.' },
+      explain: 'Jeder Zweig der Methode braucht einen Test. Die Option „Ziel-Mock hat danach einen höheren Stand“ ist der typische Denkfehler: Ein Mock hat **keinen echten Stand**, `getStand()` liefert weiter, was eingerichtet wurde (sonst 0). Statt der Auswirkung prüft man den **Aufruf**: `verify(nach).gutschreiben(30)`.' },
 
     { id: 'K06-S02-F04', sec: 'fall', fall: 'B', type: 'explain', wichtig: true, kind: 'JUnit-Test schreiben', minuten: 6, t: 'B4 · Test: erfolgreiche Übertragung',
       prompt: 'Schreibe den Test für eine erfolgreiche Übertragung von 30 Punkten von `a` nach `b`. Prüfe auch, dass **erst** abgebucht und **dann** gutgeschrieben wird.',

@@ -94,7 +94,7 @@ Mockito.[[1]](kasse.getKontostand()).[[2]](42);`,
         '`Mockito.thenThrow(new IllegalStateException()).when(kasse.auszahlen(10));`'
       ],
       answer: 2,
-      explain: '`when(…)` braucht als Argument einen **Rückgabewert**, und eine `void`-Methode hat keinen: Die erste Zeile kompiliert nicht. Deshalb die umgekehrte Schreibweise: `doThrow(exception).when(mock).methode(parameter)`. Bei Methoden mit Rückgabewert geht `when(mock.methode()).thenThrow(…)`.' },
+      explain: '`when(…)` braucht als Argument einen **Rückgabewert**, und eine `void`-Methode hat keinen: `when(kasse.auszahlen(10))` kompiliert deshalb nicht. Deshalb die umgekehrte Schreibweise: `doThrow(exception).when(mock).methode(parameter)`. Bei Methoden mit Rückgabewert geht `when(mock.methode()).thenThrow(…)`.' },
 
     { id: 'K06-S01-F08', sec: 'setup', type: 'input', t: 'Mehrere Rückgabewerte',
       prompt: 'Was wird ausgegeben?',

@@ -215,7 +215,7 @@ public void uebertrageIn(Collection<? super T> ziel) {
         '`<T> Collection<T extends Number> zahlen`'
       ],
       answer: 2,
-      explain: 'Die Methode **liest** nur: `? extends Number`, und jedes gelesene Element ist sicher eine `Number` mit `doubleValue()`. `Collection` statt `List`, weil Sets auch gehen sollen. `Collection<Number>` nähme keine `List<Integer>`, `? super Number` nur Number- oder Object-Listen. Die letzte Option ist keine gültige Syntax.' },
+      explain: 'Die Methode **liest** nur: `? extends Number`, und jedes gelesene Element ist sicher eine `Number` mit `doubleValue()`. `Collection` statt `List`, weil Sets auch gehen sollen. `Collection<Number>` nähme keine `List<Integer>`, `? super Number` nur Number- oder Object-Listen. `<T> Collection<T extends Number> …` ist keine gültige Syntax.' },
 
     { id: 'K05-S03-F08', sec: 'stat', fall: 'B', type: 'input', wichtig: true, t: 'B2 · Ausgabe vorhersagen',
       prompt: 'Was gibt das Programm aus? (drei Zeilen) `summe` ist wie in B1 deklariert und addiert mit `doubleValue()`. `Hund` und `Tier` sind wie in Fall A.',

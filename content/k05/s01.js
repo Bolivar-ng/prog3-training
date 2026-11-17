@@ -118,7 +118,7 @@ System.out.println(p + " " + p.getauscht() + " " + p.getauscht().getLinks() * 10
         '`public static T erstes(List<T> l)`'
       ],
       answer: 2,
-      explain: 'Der Typparameter steht **nach den Modifizierern und direkt vor dem Rückgabetyp**. Ohne `<T>` (letzte Option) ist `T` gar nicht deklariert, der Compiler meldet „cannot find symbol“. `<T>` vor `static` oder hinter dem Rückgabetyp ist ein Syntaxfehler.' },
+      explain: 'Der Typparameter steht **nach den Modifizierern und direkt vor dem Rückgabetyp**. Ohne `<T>` (`public static T erstes(…)`) ist `T` gar nicht deklariert, der Compiler meldet „cannot find symbol“. `<T>` vor `static` oder hinter dem Rückgabetyp ist ein Syntaxfehler.' },
 
     { id: 'K05-S01-F08', sec: 'methode', type: 'multi', wichtig: true, t: 'Aufruf mit und ohne explizites Typargument',
       prompt: 'Gegeben ist `static <T> T erstes(List<T> l)` in der Klasse `Main`. Welche Aufrufe (in einer statischen Methode von `Main`) kompilieren?',
