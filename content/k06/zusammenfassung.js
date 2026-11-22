@@ -107,6 +107,23 @@ order.verify(nach).einzahlen(…);   // … dann das, sonst schlägt der Test fe
 <li>Gegen ein <strong>Interface</strong> programmieren, nicht gegen eine konkrete Klasse.</li>
 </ul>
 
+<h2>12. Typische Fallen</h2>
+<table>
+<tr><th>Falle</th><th>Was passiert</th><th>Richtig</th></tr>
+<tr><td><code>when</code> nach dem Aufruf</td><td>wirkt nicht mehr, das Mock lieferte schon den Standardwert</td><td>erst einrichten, dann aufrufen</td></tr>
+<tr><td>„unbekannt“ nicht eingerichtet</td><td><code>int</code>-Methode liefert <strong>0</strong>, nicht <code>-1</code></td><td>Sonderwerte ausdrücklich mit <code>thenReturn</code> setzen</td></tr>
+<tr><td><code>when</code> auf dem echten Testobjekt</td><td>Fehlermeldung, <code>when</code> braucht einen Mock-Aufruf</td><td>getestete Klasse aufrufen und Ergebnis prüfen</td></tr>
+<tr><td><code>verify(m).x()</code> für „nichts passiert“</td><td>prüft genau <strong>einmal</strong>, also das Gegenteil</td><td><code>verify(m, never()).x(any…)</code> oder <code>verifyNoInteractions(m)</code></td></tr>
+<tr><td><code>never()</code> mit festem Wert</td><td>prüft nur diesen einen Wert</td><td><code>never()</code> zusammen mit Matchern wie <code>anyInt()</code></td></tr>
+<tr><td>Objekt ohne <code>equals</code> im <code>verify</code></td><td>nur dieselbe Referenz passt, der Test ist rot</td><td><strong>ArgumentCaptor</strong> und die Werte einzeln prüfen (Records haben <code>equals</code>)</td></tr>
+<tr><td>Mocks als <code>static</code>-Konstante</td><td>Aufrufe aus anderen Tests zählen mit</td><td>Mocks im <code>@BeforeEach</code> frisch erzeugen</td></tr>
+</table>
+<pre><code>ArgumentCaptor&lt;Bon&gt; captor = ArgumentCaptor.forClass(Bon.class);
+Mockito.verify(drucker).drucken(captor.capture());   // fängt den echten Bon ab
+assertEquals(570, captor.getValue().getSumme());      // getValue = letzter Wert, getAllValues = alle</code></pre>
+<p>Ein Mock einer <strong>Klasse</strong> ist ein Objekt einer Unterklasse: Ein <code>Sparbuch</code>-Mock ist ein <code>Konto</code>, aber kein <code>UeberweisungsfaehigesKonto</code>. So testet man, dass eine Methode bestimmte Kontoarten ablehnt. Das Einrichten im <code>setUp</code> zählt <strong>nicht</strong> als Interaktion für <code>verifyNoInteractions</code>.</p>
+<div class="box merke"><b>Merke</b>Ein roter Test heißt nicht automatisch, dass der Code falsch ist: Lies jede <code>verify</code>-Zeile als Satz („prüfe, dass … einmal aufgerufen wurde“) und vergleiche ihn mit der Situation. Und: Gute Tests prüfen auch die <strong>Nebeneffekte</strong>. Erst <code>verifyNoInteractions</code> zeigt, dass trotz richtiger Rückgabe schon Ware entnommen oder Geld abgebucht wurde.</div>
+
 <h2>Spickzettel: die 5 Schritte</h2>
 <ol>
 <li><strong>Erzeugen:</strong> <code>Kasse m = Mockito.mock();</code></li>

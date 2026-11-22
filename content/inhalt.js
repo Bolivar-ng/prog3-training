@@ -54,9 +54,9 @@ P3.kapitel([
     id: 'K06',
     ordner: 'k06',
     titel: 'Mocking mit Mockito',
-    beschreibung: 'Klassen unabhängig voneinander testen: Mock-Objekte erzeugen und einrichten, Aufrufe verifizieren, ArgumentMatchers und ArgumentCaptor, Reihenfolge und Dependency Injection.',
+    beschreibung: 'Klassen unabhängig voneinander testen: Mock-Objekte erzeugen und einrichten, Aufrufe verifizieren, ArgumentMatchers und ArgumentCaptor, Reihenfolge, Dependency Injection und die typischen Fallen beim Testen.',
     zusammenfassung: true,
-    serien: ['s01', 's02']
+    serien: ['s01', 's02', 's03']
   },
   {
     id: 'K90',
@@ -65,6 +65,6 @@ P3.kapitel([
     titel: 'Probetests',
     beschreibung: 'Tests wie in der Prüfung, 30 bis 40 Minuten, Theorie und Praxis aus allen bisherigen Kapiteln plus Prog-2-Wiederholung.',
     zusammenfassung: false,
-    serien: ['t01', 't02', 't03', 't04', 't05', 't06', 't07', 't08', 't09']
+    serien: ['t01', 't02', 't03', 't04', 't05', 't06', 't07', 't08', 't09', 't10']
   }
 ]);
