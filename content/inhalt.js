@@ -62,9 +62,9 @@ P3.kapitel([
     id: 'K07',
     ordner: 'k07',
     titel: 'Funktionale Interfaces und Streams',
-    beschreibung: 'Die wichtigsten funktionalen Interfaces der Standardbibliothek im Kopf: Runnable, Supplier, Consumer, Function, Predicate, BinaryOperator, Comparator. Welcher Typ passt zu welchem Lambda? Danach: Streams.',
+    beschreibung: 'Die wichtigsten funktionalen Interfaces im Kopf und welcher Typ zu welchem Lambda passt. Streams: intermediate und terminal Operations, lazy und Ausführungsreihenfolge, reduce und collect, Collectors und Collector.of, stateless und non-interfering.',
     zusammenfassung: true,
-    serien: ['s01']
+    serien: ['s01', 's02', 's03']
   },
   {
     id: 'K90',
